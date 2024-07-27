@@ -4,11 +4,10 @@ Surviv Reloaded is an open-source server for the defunct online game surviv.io. 
 
 ## Try it out!
 
-https://resurviv.io
 
 ## Join the Discord!
 
-https://discord.resurviv.io
+
 
 ## Install it
 
@@ -23,8 +22,8 @@ Git: https://git-scm.com/downloads
 
 Open a terminal or command prompt. Navigate to the folder you want the server to be in, then run the following commands:
 ```
-git clone https://github.com/SurvivReloaded/survivreloaded-server.git
-cd survivreloaded-server
+git clone 
+cd 
 ```
 
 
@@ -32,7 +31,7 @@ cd survivreloaded-server
 
 Run these commands to download the client and set up the server:
 ```
-git clone https://github.com/SurvivReloaded/survivreloaded-client.git public
+git clone 
 npm install
 npm run build
 ```
