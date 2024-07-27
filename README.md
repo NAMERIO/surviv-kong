@@ -4,11 +4,10 @@ Surviv Reloaded is an open-source server for the defunct online game surviv.io. 
 
 ## Try it out!
 
-https://resurviv.io
 
 ## Join the Discord!
 
-https://discord.resurviv.io
+
 
 ## Install it
 
