@@ -1,0 +1,28 @@
+{
+  "host": "namerio.online",
+  "port": 443,
+  "https": true,
+  "webSocketHost": "namerio.online",
+  "webSocketPort": 444,
+  "webSocketHttps": true,
+  "webSocketDevAddress": "namerio.online:444",
+  "useWebSocketDevAddress": true,
+  "webSocketRegions": {
+    "na": "na.resurviv.io",
+    "eu": "eu.resurviv.io",
+    "as": "as.resurviv.io"
+  },
+  "defaultRegion": "na",
+  "keyFile": "/etc/letsencrypt/live/namerio.online/privkey.pem",
+  "certFile": "/etc/letsencrypt/live/namerio.online/fullchain.pem",
+
+  "movementSpeed": 0.013,
+  "botProtection": false,
+  "stopServerOnGameEnd": false,
+  "debug": {
+    "disableMapGeneration": false,
+    "fixedSpawnLocation": [],
+    "disableRedZone": false,
+    "disableStaticFileCache": true
+  }
+}
