@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1000"
+   height="800"
+   version="1.1"
+   id="svg91"
+   sodipodi:docname="map-building-warehouse-floor-01.svg"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)">
+  <metadata
+     id="metadata95">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview93"
+     showgrid="true"
+     inkscape:zoom="1.136"
+     inkscape:cx="1029.8114"
+     inkscape:cy="291.38848"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg91"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0">
+    <inkscape:grid
+       type="xygrid"
+       id="grid1631"
+       empspacing="8"
+       spacingy="4"
+       spacingx="4"
+       originx="0"
+       originy="0" />
+  </sodipodi:namedview>
+  <defs
+     id="defs79">
+    <pattern
+       inkscape:collect="always"
+       xlink:href="#pattern1675"
+       id="pattern1687"
+       patternTransform="matrix(0.60227273,0.60227273,-0.60227273,0.60227273,900,864)" />
+    <pattern
+       inkscape:collect="always"
+       xlink:href="#pattern1675"
+       id="pattern1685"
+       patternTransform="matrix(-0.60227273,-0.60227273,0.60227273,-0.60227273,1100,-64)" />
+    <pattern
+       inkscape:collect="always"
+       xlink:href="#pattern1665"
+       id="pattern1675"
+       patternTransform="matrix(0.60227273,0.60227273,-0.60227273,0.60227273,888,860)" />
+    <pattern
+       inkscape:collect="always"
+       xlink:href="#pattern1653"
+       id="pattern1665"
+       patternTransform="matrix(0.60227273,0.60227273,-0.60227273,0.60227273,944,860)" />
+    <pattern
+       inkscape:collect="always"
+       xlink:href="#h"
+       id="pattern1653"
+       patternTransform="matrix(0.63636364,0.63636364,-0.63636364,0.63636364,928,928)" />
+    <pattern
+       xlink:href="#a"
+       id="k"
+       patternTransform="matrix(.625 0 0 .625 2160 -183)" />
+    <pattern
+       xlink:href="#b"
+       id="h"
+       patternTransform="matrix(0.54545455,0.54545455,-0.54545455,0.54545455,992,832)" />
+    <pattern
+       xlink:href="#c"
+       id="f"
+       patternTransform="translate(2248 -159) scale(.53217)" />
+    <pattern
+       xlink:href="#d"
+       id="c"
+       patternTransform="translate(2248 344) scale(.53217)" />
+    <pattern
+       xlink:href="#e"
+       id="d"
+       patternTransform="translate(2248 -159) scale(.53217)" />
+    <clipPath
+       id="i">
+      <path
+         d="m 200,0 v 240 h 40 V 40 h 1520 v 200 h 40 V 0 Z m 0,560 V 800 H 1800 V 560 h -40 V 760 H 240 V 560 Z"
+         stroke-miterlimit="10"
+         id="path7"
+         inkscape:connector-curvature="0"
+         style="fill:#6b6b6b;stroke-width:15.11800003;stroke-miterlimit:10" />
+    </clipPath>
+    <pattern
+       patternUnits="userSpaceOnUse"
+       width="128"
+       height="128"
+       patternTransform="translate(2248 -159)"
+       id="e">
+      <path
+         fill="#999"
+         stroke-width="15.118"
+         stroke-miterlimit="10"
+         d="M0 0h128v128H0z"
+         id="path10" />
+      <path
+         d="M0 0v2.34L125.66 128H128v-2.34L2.34 0z"
+         fill="#191919"
+         stroke-width="1.7"
+         id="path12" />
+      <path
+         d="M125.66 0L0 125.66V128h2.34L128 2.34V0z"
+         fill="#191919"
+         stroke-width="1.7"
+         id="path14" />
+    </pattern>
+    <clipPath
+       id="j">
+      <path
+         stroke-miterlimit="10"
+         d="m 1800,-503 h 200 v 800 h -200 z"
+         id="path17"
+         inkscape:connector-curvature="0"
+         style="fill:url(#f);stroke-width:5.78100014;stroke-miterlimit:10" />
+    </clipPath>
+    <pattern
+       patternUnits="userSpaceOnUse"
+       width="176"
+       height="176"
+       patternTransform="translate(2312 633)"
+       id="b">
+      <path
+         fill="#5a433a"
+         stroke-width="20.787"
+         stroke-miterlimit="10"
+         d="M0 0h176v176H0z"
+         id="path20" />
+      <g
+         fill="#cebbb4"
+         fill-opacity=".071"
+         stroke-opacity=".49"
+         id="g58">
+        <path
+           transform="rotate(180 0 -497.26) scale(3.77953)"
+           stroke-width=".723"
+           d="M-20.108-295.942h2.117v14.817h-2.117z"
+           id="path22" />
+        <path
+           transform="matrix(0 -3.77953 3.77953 0 0 -994.52)"
+           stroke-width=".723"
+           d="M-288.533 0h2.117v14.817h-2.117z"
+           id="path24" />
+        <path
+           transform="rotate(180 0 -497.26) scale(3.77953)"
+           stroke-width=".723"
+           d="M-8.467-283.242h2.117v14.817h-2.117z"
+           id="path26" />
+        <path
+           transform="matrix(0 -3.77953 3.77953 0 0 -994.52)"
+           stroke-width=".723"
+           d="M-277.95 11.642h2.117v14.817h-2.117zm-10.583 11.641h2.117V38.1h-2.117z"
+           id="path28" />
+        <path
+           transform="rotate(180 0 -497.26) scale(3.77953)"
+           stroke-width=".723"
+           d="M-31.75-283.242h2.117v14.817h-2.117z"
+           id="path30" />
+        <path
+           transform="rotate(180 0 -497.26) scale(3.77953)"
+           stroke-width=".58"
+           d="M-20.108-272.658h2.117v9.525h-2.117z"
+           id="path32" />
+        <path
+           transform="matrix(0 -3.77953 3.77953 0 0 -994.52)"
+           stroke-width=".723"
+           d="M-265.25 0h2.117v14.817h-2.117zm0 23.283h2.117V38.1h-2.117z"
+           id="path34" />
+        <path
+           transform="matrix(0 -3.77953 3.77953 0 0 -994.52)"
+           stroke-width=".335"
+           d="M-277.95 0h2.117v3.175h-2.117z"
+           id="path36" />
+        <path
+           transform="rotate(180 0 -497.26) scale(3.77953)"
+           stroke-width=".58"
+           d="M-43.392-272.658h2.117v9.525h-2.117z"
+           id="path38" />
+        <path
+           transform="matrix(0 -3.77953 3.77953 0 0 -994.52)"
+           stroke-width=".641"
+           d="M-277.95 34.925h2.117v11.642h-2.117z"
+           id="path40" />
+        <path
+           transform="rotate(180 0 -497.26) scale(3.77953)"
+           stroke-width=".725"
+           d="M-43.406-295.942h2.131v14.817h-2.131z"
+           id="path42" />
+        <path
+           stroke-width=".723"
+           d="M29.633 291.708h2.117v14.817h-2.117z"
+           transform="translate(0 -994.52) scale(3.77953)"
+           id="path44" />
+        <path
+           transform="matrix(0 3.77953 -3.77953 0 0 -994.52)"
+           stroke-width=".641"
+           d="M299.117-46.567h2.117v11.642h-2.117z"
+           id="path46" />
+        <path
+           stroke-width=".432"
+           d="M41.275 304.408h2.117v5.292h-2.117z"
+           transform="translate(0 -994.52) scale(3.77953)"
+           id="path48" />
+        <path
+           transform="matrix(0 3.77953 -3.77953 0 0 -994.52)"
+           stroke-width=".723"
+           d="M299.117-26.458h2.117v14.817h-2.117z"
+           id="path50" />
+        <path
+           stroke-width=".432"
+           d="M17.992 304.408h2.117v5.292h-2.117z"
+           transform="translate(0 -994.52) scale(3.77953)"
+           id="path52" />
+        <path
+           transform="matrix(0 3.77953 -3.77953 0 0 -994.52)"
+           stroke-width=".335"
+           d="M299.117-3.175h2.117V0h-2.117z"
+           id="path54" />
+        <path
+           stroke-width=".725"
+           d="M6.35 291.708h2.131v14.817H6.35z"
+           transform="translate(0 -994.52) scale(3.77953)"
+           id="path56" />
+      </g>
+    </pattern>
+    <pattern
+       patternUnits="userSpaceOnUse"
+       width="128"
+       height="128"
+       patternTransform="translate(2160 -183)"
+       id="a">
+      <path
+         fill="#999"
+         stroke-width="15.118"
+         stroke-miterlimit="10"
+         d="M0 0h128v128H0z"
+         id="path61" />
+      <path
+         d="M0 0v2.34L125.66 128H128v-2.34L2.34 0z"
+         fill="#191919"
+         fill-opacity=".457"
+         stroke-width="1.7"
+         id="path63" />
+      <path
+         d="M125.66 0L0 125.66V128h2.34L128 2.34V0z"
+         fill="#191919"
+         fill-opacity=".451"
+         stroke-width="1.7"
+         id="path65" />
+    </pattern>
+    <pattern
+       xlink:href="#g"
+       id="m"
+       patternTransform="matrix(.625 0 0 .625 2160 -183)" />
+    <pattern
+       patternUnits="userSpaceOnUse"
+       width="128"
+       height="128"
+       patternTransform="translate(2160 -183)"
+       id="g">
+      <path
+         fill="#999"
+         stroke-width="15.118"
+         stroke-miterlimit="10"
+         d="M0 0h128v128H0z"
+         id="path69" />
+      <path
+         d="M0 0v2.34L125.66 128H128v-2.34L2.34 0z"
+         fill="#191919"
+         fill-opacity=".457"
+         stroke-width="1.7"
+         id="path71" />
+      <path
+         d="M125.66 0L0 125.66V128h2.34L128 2.34V0z"
+         fill="#191919"
+         fill-opacity=".451"
+         stroke-width="1.7"
+         id="path73" />
+    </pattern>
+    <clipPath
+       id="l">
+      <path
+         stroke-miterlimit="10"
+         d="m 1800,-503 h 200 v 800 h -200 z"
+         id="path76"
+         inkscape:connector-curvature="0"
+         style="fill:url(#f);stroke-width:5.78100014;stroke-miterlimit:10" />
+    </clipPath>
+  </defs>
+  <path
+     style="fill:url(#pattern1687)"
+     inkscape:connector-curvature="0"
+     d="M 200,40 H 1800 V 760 H 200 Z"
+     id="path81" />
+  <path
+     style="fill:#4d4d4d;stroke:#050505;stroke-width:15.11800003;stroke-miterlimit:10"
+     inkscape:connector-curvature="0"
+     d="m 200,0 v 240 h 40 V 40 h 1520 v 200 h 40 V 0 Z m 0,560 V 800 H 1800 V 560 h -40 V 760 H 240 V 560 Z"
+     clip-path="url(#i)"
+     stroke-miterlimit="10"
+     id="path83" />
+  <path
+     style="fill:url(#k)"
+     inkscape:connector-curvature="0"
+     clip-path="url(#j)"
+     d="m 1800,-503 h 200 v 800 h -200 z"
+     transform="translate(0,503)"
+     id="path85" />
+  <path
+     style="fill:url(#m)"
+     inkscape:connector-curvature="0"
+     transform="translate(-1800,503)"
+     clip-path="url(#l)"
+     d="m 1800,-503 h 200 v 800 h -200 z"
+     id="path89" />
+  <path
+     id="path1683"
+     d="M 1800,760 H 1000 V 40 h 800 z"
+     inkscape:connector-curvature="0"
+     style="fill:url(#pattern1685)"
+     sodipodi:nodetypes="ccccc" />
+</svg>

@@ -1,0 +1,18 @@
+<svg width="133" height="133" viewBox="0 0 133 133" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M66.5 133C29.7731 133 3.55531e-07 103.207 7.93582e-07 66.5C1.23163e-06 29.7925 29.7731 3.55833e-07 66.5 7.94775e-07C103.227 1.23372e-06 133 29.7925 133 66.5C133 103.207 103.227 133 66.5 133Z" fill="#EDEB7F"/>
+<mask id="mask0" mask-type="alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="133" height="133">
+<path d="M66.5 133C29.7731 133 3.55531e-07 103.207 7.93582e-07 66.5C1.23163e-06 29.7925 29.7731 3.55833e-07 66.5 7.94775e-07C103.227 1.23372e-06 133 29.7925 133 66.5C133 103.207 103.227 133 66.5 133Z" fill="#EDEB7F"/>
+</mask>
+<g mask="url(#mask0)">
+<rect y="133" width="133" height="133" transform="rotate(-90 0 133)" fill="#000004"/>
+<rect x="80" y="141" width="148" height="54" transform="rotate(-90 80 141)" fill="#CE2123"/>
+<rect x="66" y="141" width="148" height="10" transform="rotate(-90 66 141)" fill="#CF5E1B"/>
+<rect x="52" y="141" width="148" height="10" transform="rotate(-90 52 141)" fill="#CC9B1E"/>
+<rect x="38" y="141" width="148" height="10" transform="rotate(-90 38 141)" fill="#D0BA70"/>
+<rect x="24" y="141" width="148" height="10" transform="rotate(-90 24 141)" fill="#5687B0"/>
+<rect x="17" y="141" width="148" height="4" transform="rotate(-90 17 141)" fill="#27A2A4"/>
+<rect x="11" y="141" width="148" height="4" transform="rotate(-90 11 141)" fill="#27A2A4"/>
+<rect x="5" y="141" width="148" height="4" transform="rotate(-90 5 141)" fill="#27A2A4"/>
+<rect x="-1" y="141" width="148" height="4" transform="rotate(-90 -1 141)" fill="#27A2A4"/>
+</g>
+</svg>

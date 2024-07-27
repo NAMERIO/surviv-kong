@@ -1,0 +1,24 @@
+<svg width="77" height="77" viewBox="0 0 77 77" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="mask0" mask-type="alpha" maskUnits="userSpaceOnUse" x="9" y="9" width="60" height="60">
+<path d="M69 39.006C69 22.4374 55.5685 9.00331 39 9C22.4315 8.99669 9 22.4255 9 38.994C9 55.5626 22.4315 68.9967 39 69C55.5685 69.0033 69 55.5745 69 39.006Z" fill="url(#paint0_radial)"/>
+<path d="M9 39.0008H69V68.9948H9V39.0008Z" fill="url(#paint1_radial)"/>
+</mask>
+<g mask="url(#mask0)">
+<rect x="8" y="9" width="12" height="60" fill="#9A1039"/>
+<rect x="20" y="9" width="12" height="60" fill="#D23C45"/>
+<rect x="32" y="9" width="12" height="60" fill="#9A1039"/>
+<rect x="45" y="9" width="12" height="60" fill="#D23C45"/>
+<rect x="57" y="9" width="12" height="60" fill="#9A1039"/>
+</g>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M3 38.994C3 19.1204 19.1093 2.99603 39.0012 3C58.8897 3.00397 74.9961 19.1295 75 38.9988V74.994H39.6718C39.4479 74.998 39.2235 75 38.9988 75C38.779 75 38.5596 74.9979 38.3406 74.994H3L3 38.994ZM38.9988 14.6632C25.5766 14.6605 14.6795 25.5445 14.6795 38.994L14.6795 63.3307H38.4541L38.512 63.3319C38.6747 63.3351 38.8377 63.3368 39.0012 63.3368C39.168 63.3368 39.3344 63.3352 39.5001 63.3319L39.5582 63.3307H63.3205V39.0011C63.3205 39.0007 63.3205 39.0003 63.3205 39C63.3173 25.5523 52.42 14.6659 38.9988 14.6632Z" fill="black"/>
+<defs>
+<radialGradient id="paint0_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(25.3099 35.0963) rotate(40.0028) scale(33.9321 33.866)">
+<stop stop-color="#C08F46"/>
+<stop offset="1" stop-color="#8C5A10"/>
+</radialGradient>
+<radialGradient id="paint1_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(25.3099 35.0963) rotate(40.0028) scale(33.9321 33.866)">
+<stop stop-color="#C08F46"/>
+<stop offset="1" stop-color="#8C5A10"/>
+</radialGradient>
+</defs>
+</svg>
