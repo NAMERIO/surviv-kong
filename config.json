@@ -1,11 +1,11 @@
 {
-  "host": "namerio.online",
-  "port": 443,
-  "https": true,
-  "webSocketHost": "namerio.online",
-  "webSocketPort": 444,
-  "webSocketHttps": true,
-  "webSocketDevAddress": "namerio.online:444",
+  "host": "127.0.0.1",
+  "port": 8000,
+  "https": false,
+  "webSocketHost": "127.0.0.1",
+  "webSocketPort": 8001,
+  "webSocketHttps": false,
+  "webSocketDevAddress": "127.0.0.1:8001",
   "useWebSocketDevAddress": true,
   "webSocketRegions": {
     "na": "na.resurviv.io",
@@ -13,8 +13,8 @@
     "as": "as.resurviv.io"
   },
   "defaultRegion": "na",
-  "keyFile": "/etc/letsencrypt/live/namerio.online/privkey.pem",
-  "certFile": "/etc/letsencrypt/live/namerio.online/fullchain.pem",
+  "keyFile": "key.pem",
+  "certFile": "cert.pem",
 
   "movementSpeed": 0.013,
   "botProtection": false,
