@@ -20,6 +20,7 @@ export const AllowedMelee = readJson("data/allowedMelee.json");
 export const AllowedEmotes = readJson("data/allowedEmotes.json");
 export const AllowedHeal = readJson("data/allowedHeal.json");
 export const AllowedBoost = readJson("data/allowedBoost.json");
+export const AllowedDeathEffect = readJson("data/allowedDeathEffect.json");
 export const IdToMapType = readJson("data/idToMapType.json");
 export const IdToGameType = readJson("data/idToGameType.json");
 export const TypeToId = readJson("data/typeToId.json");

@@ -6,6 +6,7 @@ import {
     AllowedHeal,
     AllowedMelee,
     AllowedSkins,
+    AllowedDeathEffect,
     AmmoTypes,
     clamp,
     Config,
@@ -298,6 +299,7 @@ export class Player extends GameObject {
           AllowedMelee.includes(loadout.melee) &&
           AllowedHeal.includes(loadout.heal) &&
           AllowedBoost.includes(loadout.boost) &&
+          AllowedDeathEffect.includes(loadout.deathEffect) &&
           loadout.emotes &&
           loadout.emotes.length === 6) {
             this.loadout = {
@@ -306,7 +308,7 @@ export class Player extends GameObject {
                 meleeType: loadout.melee,
                 heal: TypeToId[loadout.heal],
                 boost: TypeToId[loadout.boost],
-                deathEffect: 0,
+                deathEffect: TypeToId[loadout.deathEffect],
                 emotes: []
             };
             for(const emote of loadout.emotes) {
