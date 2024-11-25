@@ -29,7 +29,7 @@ const bannedIPs: string[] = [];
 
 app.get("/", (res) => {
     res.writeStatus("302");
-    res.writeHeader("Location", "http://127.0.0.1:8000");
+    res.writeHeader("Location", "http://127.0.0.1:8000/");
     res.end();
 });
 

@@ -2621,5 +2621,3921 @@
     },
     "baseType": "stonehammer",
     "isSkin": true
+  },
+  
+  "red_gloves": {
+    "name": "Red Gloves",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "feral_gloves": {
+    "name": "Feral Gloves",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "crab_gloves": {
+    "name": "Crab Gloves",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_split": {
+    "name": "Split Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_blueVelvet": {
+    "name": "Blue Velvet Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_frostpunch": {
+    "name": "Frost Punch",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_immolate": {
+    "name": "Immolate Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_bulletbills": {
+    "name": "Bullet Bills Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_moss": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_blackholes": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_rainbowhands": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_darklets": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_scifi": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_poke": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_paws": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_dinoclaws": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_leaf": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_ranger": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_linedUp": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_lit": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_gift_punch": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_ember": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_santa": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_purptog": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_golden_lobster": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_pineFury": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_dreidel": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_bePresent": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_tropicana": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_spongeguy": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_rafflesia": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_golddrops": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_grizzly": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_coco_nut": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_101Spots": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_atnet": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_vitaminc": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_marblerun": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_beachballin": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_fritterpunch": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_dishsoap": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_watermelon": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_bloody": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_makeachoice": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_bologna": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_flashy": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_tigerseed": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_paddle": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_inkybusiness": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_theotherpong": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_getdowntonite": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_milestones": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_washilamps": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_ghostpoke": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_condimentium": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_shinyjello": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_graphbars": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_purpleshutter": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_orangeandlime": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_nopinenogain": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_bullseye": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_flamingnucleus": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_meteornite": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_orangemintstones": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_firsttool": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_stonedgy": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_bonkbonk": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_fuzzyhooves": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_retrhorizon": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_pixeldots": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_ranchchips": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_lolitapop": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_dizzielocs": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_q-fist": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_d-punch-pad": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_developtheserolls": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_squareycherry": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_tawget": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_boogiestripes": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_garbanjo": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_wreckedangle": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_woodyallan": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_cattlebattle": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_badmitten": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_milkshaked": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_horsepower": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
+  },
+  "fist_upandatom": {
+    "name": "Moss Fist",
+    "type": "melee",
+    "quality": 0,
+    "autoAttack": false,
+    "switchDelay": 0.25,
+    "damage": 24,
+    "obstacleDamage": 1,
+    "headshotMult": 1,
+    "attack": {
+      "offset": {
+        "x": 1.35,
+        "y": 0
+      },
+      "rad": 0.9,
+      "damageTimes": [
+        0.1
+      ],
+      "cooldownTime": 0.25
+    },
+    "speed": {
+      "equip": 1
+    },
+    "anim": {
+      "idlePose": "fists",
+      "attackAnims": [
+        "fists"
+      ]
+    },
+    "sound": {
+      "swing": "punch_swing_01",
+      "deploy": "stow_weapon_01",
+      "playerHit": "punch_hit_01"
+    },
+    "lootImg": {
+      "sprite": "loot-weapon-fists.img",
+      "scale": 0.3,
+      "rad": 25,
+      "tint": 65280
+    },
+    "baseType": "fists",
+    "rarity": 0,
+    "lore": "The old one-two.",
+    "isSkin": true
   }
 }
