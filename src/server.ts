@@ -6,25 +6,37 @@ import { Worker } from "node:worker_threads";
 import { Config, Debug, getContentType, log, readJson, readPostedJson } from "./utils";
 import { exec, spawn } from "child_process";
 
-// Initialize the server
 let app;
-if(Config.https) {
+if (Config.https) {
     app = SSLApp({
         key_file_name: Config.keyFile,
-        cert_file_name: Config.certFile
+        cert_file_name: Config.certFile,
     });
 } else {
     app = App();
 }
 
+// Add CORS headers middleware
+function addCorsHeaders(res: any) {
+    res.writeHeader("Access-Control-Allow-Origin", "*"); // Allow all origins; replace "*" with a specific origin if needed
+    res.writeHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.writeHeader("Access-Control-Allow-Headers", "Content-Type");
+}
+
+// Handle preflight OPTIONS requests
+app.options("/*", (res) => {
+    addCorsHeaders(res);
+    res.end();
+});
+
 // Set up static files
 const staticFiles = {};
 function walk(dir: string, files: string[] = []): string[] {
-    if(dir.includes(".git") || dir.includes("src") || dir.includes(".vscode") || dir.includes(".idea")) return files;
+    if (dir.includes(".git") || dir.includes("src") || dir.includes(".vscode") || dir.includes(".idea")) return files;
     const dirFiles = fs.readdirSync(dir);
-    for(const f of dirFiles) {
+    for (const f of dirFiles) {
         const stat = fs.lstatSync(dir + "/" + f);
-        if(stat.isDirectory()) {
+        if (stat.isDirectory()) {
             walk(dir + "/" + f, files);
         } else {
             files.push(dir.slice(6) + "/" + f);
@@ -32,27 +44,28 @@ function walk(dir: string, files: string[] = []): string[] {
     }
     return files;
 }
-for(const file of walk("public")) {
+for (const file of walk("public")) {
     staticFiles[file] = fs.readFileSync("public" + file);
 }
 
 app.get("/*", async (res, req) => {
+    addCorsHeaders(res);
+
     const path: string = req.getUrl() === "/" ? "/index.html" : req.getUrl();
     let file: Buffer | undefined;
-    if(Debug.disableStaticFileCache) {
+    if (Debug.disableStaticFileCache) {
         try {
             file = fs.readFileSync("public" + path);
-        } catch(e) {
+        } catch (e) {
             file = undefined;
         }
     } else {
         file = staticFiles[path];
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     res.onAborted(() => {});
 
-    if(file === undefined) {
+    if (file === undefined) {
         res.writeStatus("404 Not Found");
         res.end(`<!DOCTYPE html><html lang="en"><body><pre>404 Not Found: ${req.getUrl()}</pre></body></html>`);
         return;
@@ -62,65 +75,96 @@ app.get("/*", async (res, req) => {
 });
 
 app.get("/api/site_info", (res) => {
+    addCorsHeaders(res);
     res.writeHeader("Content-Type", "application/json");
     res.end(fs.readFileSync("json/site_info.json"));
 });
 
 app.get("/api/games_modes", (res) => {
+    addCorsHeaders(res);
     res.writeHeader("Content-Type", "application/json");
     res.end(JSON.stringify([{ mapName: "main", teamMode: 1 }]));
 });
 
 app.get("/api/prestige_battle_modes", (res) => {
+    addCorsHeaders(res);
     res.writeHeader("Content-Type", "application/json");
     res.end(fs.readFileSync("json/prestige_battle_modes.json"));
 });
 
 app.post("/api/user/get_user_prestige", (res) => {
+    addCorsHeaders(res);
     res.writeHeader("Content-Type", "application/json");
     res.end('"0"');
 });
 
 app.post("/api/find_game", (res) => {
-    readPostedJson(res, (body) => {
-        const addr: string = Config.useWebSocketDevAddress ? Config.webSocketDevAddress : Config.webSocketRegions[body?.region] ?? Config.webSocketRegions[Config.defaultRegion];
-        res.writeHeader("Content-Type", "application/json");
-        res.end(JSON.stringify({ res: [{ zone: body.zones[0], gameId: "", useHttps: Config.useHttps, hosts: [addr], addrs: [addr] }] }));
-    }, () => {
-        log("/api/find_game: Error retrieving body");
-    });
+    addCorsHeaders(res);
+    readPostedJson(
+        res,
+        (body) => {
+            const addr: string =
+                Config.useWebSocketDevAddress
+                    ? Config.webSocketDevAddress
+                    : Config.webSocketRegions[body?.region] ?? Config.webSocketRegions[Config.defaultRegion];
+            res.writeHeader("Content-Type", "application/json");
+            res.end(
+                JSON.stringify({
+                    res: [{ zone: body.zones[0], gameId: "", useHttps: Config.useHttps, hosts: [addr], addrs: [addr] }],
+                })
+            );
+        },
+        () => {
+            log("/api/find_game: Error retrieving body");
+        }
+    );
 });
 
 app.post("/api/user/profile", (res, req) => {
+    addCorsHeaders(res);
     const loadout = readJson("json/profile.json");
     const cookies = cookie.parse(req.getHeader("cookie"));
-    //console.log(cookies.loadout);
-    if(cookies.loadout) loadout.loadout = JSON.parse(cookies.loadout);
+    if (cookies.loadout) loadout.loadout = JSON.parse(cookies.loadout);
     res.writeHeader("Content-Type", "application/json");
     res.end(JSON.stringify(loadout));
 });
 
 app.post("/api/user/loadout", (res) => {
-    readPostedJson(res, (body) => {
-        res.writeHeader("Set-Cookie", cookie.serialize("loadout", JSON.stringify(body.loadout), { path: "/", domain: "resurviv.io", maxAge: 2147483647 }));
-        res.writeHeader("Content-Type", "application/json");
-        res.end(JSON.stringify(body));
-    }, () => {
-        log("/api/user/loadout: Error retrieving body");
-    });
+    addCorsHeaders(res);
+    readPostedJson(
+        res,
+        (body) => {
+            res.writeHeader(
+                "Set-Cookie",
+                cookie.serialize("loadout", JSON.stringify(body.loadout), {
+                    path: "/",
+                    maxAge: 2147483647,
+                })
+            );
+            res.writeHeader("Content-Type", "application/json");
+            res.end(JSON.stringify(body));
+        },
+        () => {
+            log("/api/user/loadout: Error retrieving body");
+        }
+    );
 });
 
+
 app.post("/api/user/load_exclusive_offers", (res) => {
+    addCorsHeaders(res);
     res.writeHeader("Content-Type", "application/json");
     res.end(JSON.stringify({ success: true, data: [] }));
 });
 
 app.post("/api/user/load_previous_offers", (res) => {
+    addCorsHeaders(res);
     res.writeHeader("Content-Type", "application/json");
     res.end(JSON.stringify({ success: true, offers: {} }));
 });
 
 app.post("/api/user/get_pass", (res) => {
+    addCorsHeaders(res);
     res.writeHeader("Content-Type", "application/json");
     res.end(fs.readFileSync("json/get_pass.json"));
 });
