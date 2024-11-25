@@ -169,6 +169,24 @@ app.post("/api/user/get_pass", (res) => {
     res.end(fs.readFileSync("json/get_pass.json"));
 });
 
+app.post("/api/user/unlock", (res) => {
+    addCorsHeaders(res);
+    res.writeHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({}));
+});
+
+app.post("/api/user/get_user_currency_total", (res) => {
+    addCorsHeaders(res);
+    res.writeHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({}));
+});
+
+app.post("/api/user/get_market_notifications", (res) => {
+    addCorsHeaders(res);
+    res.writeHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({}));
+});
+
 const shutdownHandler = (): void => {
     log("Shutting down...");
     webSocketProcess.kill("SIGKILL");
