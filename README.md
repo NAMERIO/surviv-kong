@@ -33,6 +33,18 @@ Run these commands to download pnpm:
 ```
 pnpm install
 ```
+run this command to see what version you are using
+```
+node -v
+```
+if it's not **v18.20.5** do this command
+```
+nvm install v18.20.5 
+``` 
+Then run this command to use that version
+```
+nvm use v18.20.5
+```
 
 ### Step 4: Start the server
 
