@@ -15,6 +15,8 @@ Node.js: https://nodejs.org/
 
 Git: https://git-scm.com/downloads
 
+nvm: https://github.com/coreybutler/nvm-windows/releases/latest/download/nvm-setup.exe
+
 
 ### Step 2: Clone the repo
 
