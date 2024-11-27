@@ -25,6 +25,7 @@
   "dependencies": {
     "bit-buffer": "^0.2.5",
     "cookie": "^0.5.0",
+    "mime": "^4.0.4",
     "planck": "^1.1.0",
     "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.20.0",
     "ws": "^8.18.0"
@@ -33,14 +34,14 @@
     "@types/node": "^18.19.65",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
+    "cors": "^2.8.5",
     "eslint": "^8.57.1",
     "eslint-config-standard-with-typescript": "^34.0.1",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-n": "^15.7.0",
     "eslint-plugin-promise": "^6.6.0",
-    "nodemon": "^2.0.22",
+    "nodemon": "^3.1.7",
     "tsc-watch": "^6.2.1",
-    "typescript": "^4.9.5",
-    "cors": "^2.8.5"
+    "typescript": "^4.9.5"
   }
 }
