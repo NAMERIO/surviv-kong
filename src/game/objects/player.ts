@@ -1,5 +1,4 @@
-import { type WebSocket } from "uWebSockets.js";
-
+import { WebSocket } from "ws";
 import {
     AllowedBoost,
     AllowedEmotes,
@@ -15,10 +14,12 @@ import {
     deepCopy,
     degreesToRadians,
     Emote,
-    ItemSlot, log,
+    ItemSlot,
+    log,
     MedTypes,
     objectCollision,
-    ObjectKind, random,
+    ObjectKind,
+    random,
     randomFloat,
     removeFrom,
     sameLayer,
@@ -44,10 +45,7 @@ import { Bullet } from "../bullet";
 import type { Explosion } from "../explosion";
 import { Obstacle } from "./obstacle";
 
-// import { Building } from "./building";
-
 export class Player extends GameObject {
-
     isPlayer = true;
     isObstacle = false;
     isBullet = false;
@@ -59,7 +57,7 @@ export class Player extends GameObject {
         loot: false
     };
 
-    socket: WebSocket<any>;
+    socket: WebSocket;
     map: Map;
 
     name: string;
@@ -74,11 +72,11 @@ export class Player extends GameObject {
     xCullDist: number;
     yCullDist: number;
 
-    visibleObjects = new Set<GameObject>(); // Objects the player can see
-    nearObjects = new Set<GameObject>(); // Objects the player can see with a 1x scope
-    partialDirtyObjects = new Set<GameObject>(); // Objects that need to be partially updated
-    fullDirtyObjects = new Set<GameObject>(); // Objects that need to be fully updated
-    deletedObjects = new Set<GameObject>(); // Objects that need to be deleted
+    visibleObjects = new Set<GameObject>();
+    nearObjects = new Set<GameObject>();
+    partialDirtyObjects = new Set<GameObject>();
+    fullDirtyObjects = new Set<GameObject>();
+    deletedObjects = new Set<GameObject>();
 
     moving = false;
     movingUp = false;
@@ -98,13 +96,13 @@ export class Player extends GameObject {
         duration: 0
     };
 
-    private _health = 100; // The player's health. Ranges from 0-100.
-    private _boost = 0; // The player's adrenaline. Ranges from 0-100.
+    private _health = 100;
+    private _boost = 0;
 
     kills = 0;
 
-    downed = false; // Whether the player is downed (knocked out)
-    disconnected = false; // Whether the player has left the game
+    downed = false;
+    disconnected = false;
     deadPos: Vec2;
 
     damageable = true;
@@ -135,16 +133,16 @@ export class Player extends GameObject {
     emotes = new Set<Emote>();
     explosions = new Set<Explosion>();
 
-    body: Body; // The player's Planck.js Body
+    body: Body;
 
     loadout: {
-        outfit: number
-        melee: number
-        meleeType: string
-        heal: number
-        boost: number
-        deathEffect: number
-        emotes: number[]
+        outfit: number;
+        melee: number;
+        meleeType: string;
+        heal: number;
+        boost: number;
+        deathEffect: number;
+        emotes: number[];
     };
 
     backpackLevel = 0;
@@ -237,17 +235,17 @@ export class Player extends GameObject {
     lastWeaponSlot = this.selectedWeaponSlot;
 
     actionItem: {
-        typeString: string
-        typeId: number
-        duration: number
-        useEnd: number
+        typeString: string;
+        typeId: number;
+        duration: number;
+        useEnd: number;
     };
 
     scopeToResetTo = "1xscope";
 
     performActionAgain = false;
     lastActionType = 0;
-    lastActionItem: { duration: number, typeString: string, typeId: number, useEnd: number };
+    lastActionItem: { duration: number; typeString: string; typeId: number; useEnd: number };
 
     actionDirty = false;
     usingItem = false;
@@ -280,11 +278,11 @@ export class Player extends GameObject {
     spectatePrevious = false;
     spectateForce = false;
 
-    constructor(id: number, position: Vec2, socket: WebSocket<any>, game: Game, name: string, loadout) {
+    constructor(id: number, position: Vec2, socket: WebSocket, game: Game, name: string, loadout: any) {
         super(game, "", position, 0);
         this.kind = ObjectKind.Player;
 
-        // Misc
+        // Initialize properties
         this.game = game;
         this.map = this.game.map;
         this.socket = socket;
@@ -295,13 +293,15 @@ export class Player extends GameObject {
         this.joinTime = Date.now();
 
         // Set loadout
-        if(AllowedSkins.includes(loadout?.outfit) &&
-          AllowedMelee.includes(loadout.melee) &&
-          AllowedHeal.includes(loadout.heal) &&
-          AllowedBoost.includes(loadout.boost) &&
-          AllowedDeathEffect.includes(loadout.deathEffect) &&
-          loadout.emotes &&
-          loadout.emotes.length === 6) {
+        if (
+            AllowedSkins.includes(loadout?.outfit) &&
+            AllowedMelee.includes(loadout.melee) &&
+            AllowedHeal.includes(loadout.heal) &&
+            AllowedBoost.includes(loadout.boost) &&
+            AllowedDeathEffect.includes(loadout.deathEffect) &&
+            loadout.emotes &&
+            loadout.emotes.length === 6
+        ) {
             this.loadout = {
                 outfit: TypeToId[loadout.outfit],
                 melee: TypeToId[loadout.melee],
@@ -311,8 +311,8 @@ export class Player extends GameObject {
                 deathEffect: TypeToId[loadout.deathEffect],
                 emotes: []
             };
-            for(const emote of loadout.emotes) {
-                if(AllowedEmotes.includes(emote)) this.loadout.emotes.push(TypeToId[emote]);
+            for (const emote of loadout.emotes) {
+                if (AllowedEmotes.includes(emote)) this.loadout.emotes.push(TypeToId[emote]);
                 else this.loadout.emotes.push(TypeToId.emote_happyface);
             }
         } else {
@@ -329,47 +329,6 @@ export class Player extends GameObject {
         this.weapons[2].typeString = this.loadout.meleeType;
         this.weapons[2].typeId = this.loadout.melee;
 
-        /*
-        // Quickswitching test
-        this.inventory["762mm"] = 120;
-        this.weapons[0].typeString = "sv98";
-        this.weapons[0].typeId = TypeToId.sv98;
-        this.weapons[1].typeString = "sv98";
-        this.weapons[1].typeId = TypeToId.sv98;
-        */
-
-        // Spawn w/ random ammo & healing items in late game
-        if(game.spawnWithGoodies) {
-            switch(random(1, 4)) {
-                case 1:
-                    this.inventory["9mm"] = 60;
-                    break;
-                case 2:
-                    this.inventory["12gauge"] = 10;
-                    break;
-                case 3:
-                    this.inventory["762mm"] = 60;
-                    break;
-                case 4:
-                    this.inventory["556mm"] = 60;
-                    break;
-            }
-            switch(random(1, 4)) {
-                case 1:
-                    this.inventory.bandage = 5;
-                    break;
-                case 2:
-                    this.inventory.healthkit = 1;
-                    break;
-                case 3:
-                    this.inventory.soda = 2;
-                    break;
-                case 4:
-                    this.inventory.painkiller = 1;
-                    break;
-            }
-        }
-
         // Init body
         this.body = game.world.createBody({
             type: "dynamic",
@@ -384,6 +343,7 @@ export class Player extends GameObject {
             userData: this
         });
     }
+
 
     setVelocity(xVel: number, yVel: number): void {
         this.body.setLinearVelocity(Vec2(xVel, yVel));
@@ -1126,10 +1086,13 @@ export class Player extends GameObject {
     }
 
     sendData(stream: SurvivBitStream): void {
+        if (!this.socket || this.socket.readyState !== WebSocket.OPEN) return;
+
         try {
-            this.socket.send(stream.buffer.subarray(0, Math.ceil(stream.index / 8)), true, true);
-        } catch(e) {
-            console.warn("Error sending packet. Details:", e);
+            const data = Buffer.from(stream.buffer.subarray(0, Math.ceil(stream.index / 8)));
+            this.socket.send(data, { binary: true, compress: false });
+        } catch (e) {
+            console.warn("Error sending packet:", e);
         }
     }
 
