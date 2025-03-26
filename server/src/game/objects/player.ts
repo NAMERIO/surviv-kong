@@ -24,6 +24,7 @@ import { UnlockDefs } from "../../../../shared/defs/gameObjects/unlockDefs";
 import {
     type Action,
     type Anim,
+    DamageType,
     GameConfig,
     type HasteType,
 } from "../../../../shared/gameConfig";
@@ -562,6 +563,7 @@ export class Player extends BaseGameObject {
 
     speed: number = 0;
     moveVel = v2.create(0, 0);
+    addictionalVel=v2.create(0,0);
 
     shotSlowdownTimer: number = 0;
 
@@ -1619,6 +1621,16 @@ export class Player extends BaseGameObject {
         }
         this.moveVel = v2.mul(movement, this.speed);
 
+        this.addictionalVel=v2.lerp(1*dt,this.addictionalVel,v2.create(0,0))
+        if(movement.x!==0&&this.addictionalVel.x!==0){
+            this.addictionalVel.x+=movement.x*dt
+            if(Math.abs(this.addictionalVel.x)<this.speed*dt)this.addictionalVel.x=0
+        }
+        if(movement.y!==0&&this.addictionalVel.y!==0){
+            this.addictionalVel.y+=movement.y*dt
+            if(Math.abs(this.addictionalVel.y)<this.speed*dt)this.addictionalVel.y=0
+        }
+
         const speedToAdd = (this.speed / steps) * dt;
 
         const circle = collider.createCircle(
@@ -1627,8 +1639,10 @@ export class Player extends BaseGameObject {
         );
         const objs = this.game.grid.intersectCollider(circle);
 
+        this.pos=v2.add(this.pos,this.addictionalVel)
+
         for (let i = 0; i < steps; i++) {
-            v2.set(this.pos, v2.add(this.pos, v2.mul(movement, speedToAdd)));
+            v2.set(this.pos, v2.add(this.pos, (v2.mul(movement, speedToAdd))));
 
             for (let j = 0; j < objs.length; j++) {
                 const obj = objs[j];
@@ -1648,6 +1662,22 @@ export class Player extends BaseGameObject {
                         this.pos,
                         v2.add(this.pos, v2.mul(collision.dir, collision.pen + 0.001)),
                     );
+                    if(this.addictionalVel.x!==0&&this.addictionalVel.y!==0){
+                        this.addictionalVel=v2.add(this.addictionalVel,v2.mul(collision.dir, collision.pen + 0.001))
+                        const damage=v2.length(this.addictionalVel)*50
+                        this.damage({
+                            damageType:DamageType.Player,
+                            dir:this.addictionalVel,
+                            amount:damage*0.7
+                        })
+                        if(obj.destructible&&obj.__type===ObjectType.Obstacle){
+                            obj.damage({
+                                damageType:DamageType.Player,
+                                dir:this.addictionalVel,
+                                amount:v2.length(this.addictionalVel)*200
+                            })
+                        }
+                    }
                 }
             }
         }
@@ -1833,7 +1863,22 @@ export class Player extends BaseGameObject {
                         }
                     }
                 }
-            } else if (obj.__type === ObjectType.Obstacle) {
+            }else if(obj.__type===ObjectType.Loot) {
+                if (!util.sameLayer(this.layer, obj.layer)) continue;
+                if(this.hasteType===GameConfig.HasteType.Pulse){
+                    if(v2.distance(this.pos,obj.pos)>8) continue;
+                    const angle=Math.atan2(obj.pos.y-this.pos.y,obj.pos.x-this.pos.x)
+                    obj.push(v2.create(Math.cos(angle),Math.sin(angle)),3)
+                }
+            }else if(obj.__type===ObjectType.Player) {
+                if (!util.sameLayer(this.layer, obj.layer)||obj.playerId===this.playerId) continue;
+                if(this.hasteType===GameConfig.HasteType.Pulse){
+                    if(v2.distance(this.pos,obj.pos)>8) continue;
+                    const angle=Math.atan2(obj.pos.y-this.pos.y,obj.pos.x-this.pos.x)
+                    obj.addictionalVel.x=Math.cos(angle)
+                    obj.addictionalVel.y=Math.sin(angle)
+                }
+            }else if (obj.__type === ObjectType.Obstacle) {
                 if (!util.sameLayer(this.layer, obj.layer)) continue;
                 if (!(obj.isDoor && obj.door && !obj.door.locked && obj.door.autoOpen))
                     continue;
@@ -2968,6 +3013,10 @@ export class Player extends BaseGameObject {
         // medics always emote the healing/boost item they're using
         if (this.role == "medic") {
             this.game.playerBarn.addEmote(this.__id, this.pos, "emote_loot", false, item);
+        }
+
+        if(item==="pulseBox"){
+            this.initPulseBox()
         }
 
         this.cancelAction();
@@ -4222,6 +4271,10 @@ export class Player extends BaseGameObject {
             player.giveHaste(GameConfig.HasteType.Inspire, 5);
             player.recalculateScale();
         }
+    }
+    initPulseBox(): void {
+        this.giveHaste(GameConfig.HasteType.Pulse, 1);
+        this.recalculateScale();
     }
 
     playBugle(): void {

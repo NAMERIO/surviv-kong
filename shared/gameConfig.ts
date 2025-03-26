@@ -64,6 +64,7 @@ export enum HasteType {
     Windwalk,
     Takedown,
     Inspire,
+    Pulse
 }
 
 export enum Input {
