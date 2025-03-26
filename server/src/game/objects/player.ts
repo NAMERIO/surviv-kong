@@ -1676,7 +1676,7 @@ export class Player extends BaseGameObject {
                             obj.damage({
                                 damageType:DamageType.Player,
                                 dir:this.addictionalVel,
-                                amount:v2.length(this.addictionalVel)*50
+                                amount:v2.length(this.addictionalVel)*200
                             })
                         }
                     }
