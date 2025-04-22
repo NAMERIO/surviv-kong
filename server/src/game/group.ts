@@ -21,6 +21,8 @@ export class Group {
     maxPlayers: number;
     reservedSlots = 0;
 
+    totalCount = 0;
+
     canJoin(players: number) {
         return (
             this.maxPlayers - this.reservedSlots - players >= 0 &&
@@ -59,6 +61,7 @@ export class Group {
         player.playerStatusDirty = true;
         this.players.push(player);
         this.livingPlayers.push(player);
+        this.totalCount++;
         this.allDeadOrDisconnected = false;
         this.checkPlayers();
     }
@@ -105,6 +108,20 @@ export class Group {
                 source: p.downedBy,
             });
         }
+    }
+
+    /**
+     * checks if any players in the group have the self revive perk
+     * @returns true if any players in the group have the self revive perk
+     */
+    checkSelfRevive() {
+        const alivePlayers = this.getAlivePlayers();
+        for (const p of alivePlayers) {
+            if (p.hasPerk("self_revive")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     checkPlayers(): void {

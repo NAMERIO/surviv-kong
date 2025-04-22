@@ -5,6 +5,7 @@ import type {
     ObstacleDef,
     StructureDef,
 } from "../../../shared/defs/mapObjectsTyping";
+import type { MapId } from "../../../shared/defs/types/misc";
 import { GameConfig, TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
 import { MsgStream, MsgType } from "../../../shared/net/net";
@@ -189,6 +190,7 @@ export class GameMap {
     shoreInset: number;
 
     mapDef: MapDef;
+    mapId: MapId;
 
     factionMode: boolean;
     perkMode: boolean;
@@ -263,6 +265,8 @@ export class GameMap {
         ) as MapDef);
 
         assert(mapDef, `Invalid map name: ${game.config.mapName}`);
+
+        this.mapId = mapDef.mapId;
 
         const scale = (this.scale = game.teamMode > TeamMode.Duo ? "large" : "small");
 
@@ -1909,11 +1913,6 @@ export class GameMap {
         while (attempts++ < 500 && collided) {
             collided = false;
             v2.set(circle.pos, getPos());
-
-            if (this.game.gas.isOutSideSafeZone(circle.pos)) {
-                collided = true;
-                continue;
-            }
 
             if (this.isOnWater(circle.pos, 0)) {
                 collided = true;

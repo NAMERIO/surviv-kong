@@ -1,10 +1,12 @@
 import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import type { MapDef } from "../mapDefs";
+import { MapId } from "../types/misc";
 import { Main, type PartialMapDef } from "./baseDefs";
 
 const mapDef: PartialMapDef = {
-    mapId: 6,
+    mapId: MapId.Halloween,
+
     desc: {
         name: "Halloween",
         icon: "img/gui/pumpkin-play.svg",
@@ -192,8 +194,6 @@ const mapDef: PartialMapDef = {
             { name: "outfitCrab", count: 1, weight: 1 },
             { name: "outfitStumpAxe", count: 1, weight: 1 },
         ],
-        // seems to be unused? so adding this to suppress the warning
-        tier_pumpkin_candy: [{ name: "", weight: 1, count: 1 }],
     },
     mapGen: {
         map: {

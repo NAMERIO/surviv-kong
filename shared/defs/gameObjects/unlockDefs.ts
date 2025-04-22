@@ -65,7 +65,6 @@ const _allowedOutfits = [
     "outfitCobaltShell",
     "outfitCarbonFiber",
     "outfitDarkGloves",
-    "outfitDarkShirt",
     "outfitDesertCamo",
     "outfitCamo",
     "outfitRed",

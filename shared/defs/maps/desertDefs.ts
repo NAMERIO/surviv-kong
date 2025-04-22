@@ -2,10 +2,11 @@ import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import { v2 } from "../../utils/v2";
 import type { MapDef } from "../mapDefs";
+import { MapId } from "../types/misc";
 import { Main, type PartialMapDef } from "./baseDefs";
 
 const mapDef: PartialMapDef = {
-    mapId: 1,
+    mapId: MapId.Desert,
     desc: {
         name: "Desert",
         icon: "img/loot/loot-weapon-flare-gun.svg",
@@ -194,18 +195,6 @@ const mapDef: PartialMapDef = {
             { name: "fabricate", count: 1, weight: 1 },
             { name: "flak_jacket", count: 1, weight: 1 },
             { name: "bonus_45", count: 1, weight: 1 },
-        ],
-        tier_eye_stone: [
-            { name: "vector45", count: 1, weight: 1 },
-            { name: "45acp", count: 1, weight: 1 },
-            { name: "garand", count: 1, weight: 1 },
-            { name: "strobe", count: 1, weight: 1 },
-            { name: "healthkit", count: 1, weight: 1 },
-            { name: "painkiller", count: 1, weight: 1 },
-            { name: "m4a1", count: 1, weight: 0.7 },
-            { name: "m249", count: 1, weight: 0.2 },
-            { name: "awc", count: 1, weight: 0.1 },
-            { name: "pkp", count: 1, weight: 0.1 },
         ],
     },
     mapGen: {

@@ -13,6 +13,7 @@ import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { AudioManager } from "../audioManager";
 import type { Camera } from "../camera";
 import { device } from "../device";
+import { errorLogManager } from "../errorLogs";
 import type { Game } from "../game";
 import { type Gas, GasRenderer, GasSafeZoneRenderer } from "../gas";
 import { helpers } from "../helpers";
@@ -792,7 +793,7 @@ export class UiManager {
                 playing: this.game.m_playingTicker,
                 groupInfo: playerBarn.groupInfo,
             };
-            console.error(`badTeamInfo_1: ${JSON.stringify(err)}`);
+            errorLogManager.logError(`badTeamInfo_1: ${JSON.stringify(err)}`);
         }
 
         const layoutSm = device.uiLayout == device.UiLayout.Sm;
@@ -845,7 +846,8 @@ export class UiManager {
                                 camAabb.min,
                                 camAabb.max,
                             )!;
-                            const rot = Math.atan2(dir.y, -dir.x) + Math.PI * 0.5;
+                            // fixme: find actual cause for the indicator rotation facing backwards
+                            const rot = Math.atan2(dir.y, -dir.x) - Math.PI * 0.5;
                             const screenEdge = camera.m_pointToScreen(edge);
                             const onscreen = coldet.testCircleAabb(
                                 playerPos,

@@ -20,10 +20,10 @@ import type { OutfitDef } from "../../../../shared/defs/gameObjects/outfitDefs";
 import { PerkProperties } from "../../../../shared/defs/gameObjects/perkDefs";
 import type { RoleDef } from "../../../../shared/defs/gameObjects/roleDefs";
 import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwableDefs";
-import { UnlockDefs } from "../../../../shared/defs/gameObjects/unlockDefs";
 import {
     type Action,
     type Anim,
+    EmoteSlot,
     GameConfig,
     type HasteType,
 } from "../../../../shared/gameConfig";
@@ -37,6 +37,7 @@ import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import { Config } from "../../config";
 import { IDAllocator } from "../../utils/IDAllocator";
+import { setLoadout } from "../../utils/loadoutHelpers";
 import { validateUserName } from "../../utils/serverHelpers";
 import type { Game, JoinTokenData } from "../game";
 import { Group } from "../group";
@@ -91,6 +92,9 @@ export class PlayerBarn {
         time: number;
     }> = [];
 
+    sendWinEmoteTicker = 0;
+    sentWinEmotes = false;
+
     teams: Team[] = [];
     groups: Group[] = [];
     groupsByHash = new Map<string, Group>();
@@ -102,6 +106,10 @@ export class PlayerBarn {
     );
 
     bagSizes: (typeof GameConfig)["bagSizes"];
+
+    nextMatchDataId = 1;
+
+    nextKilledNumber = 0;
 
     constructor(readonly game: Game) {
         this.bagSizes = util.mergeDeep(
@@ -118,17 +126,17 @@ export class PlayerBarn {
         return livingPlayers[util.randomInt(0, livingPlayers.length - 1)];
     }
 
-    addPlayer(socketId: string, joinMsg: net.JoinMsg) {
+    addPlayer(socketId: string, joinMsg: net.JoinMsg, ip: string) {
         const joinData = this.game.joinTokens.get(joinMsg.matchPriv);
 
-        if (!joinData || joinData.expiresAt < Date.now() || joinData.availableUses <= 0) {
+        if (!joinData || joinData.expiresAt < Date.now()) {
             this.game.closeSocket(socketId);
             if (joinData) {
                 this.game.joinTokens.delete(joinMsg.matchPriv);
             }
             return;
         }
-        joinData.availableUses -= 1;
+        this.game.joinTokens.delete(joinMsg.matchPriv);
 
         if (joinMsg.protocol !== GameConfig.protocolVersion) {
             const disconnectMsg = new net.DisconnectMsg();
@@ -163,7 +171,16 @@ export class PlayerBarn {
             layer = 0;
         }
 
-        const player = new Player(this.game, pos, layer, socketId, joinMsg);
+        const player = new Player(
+            this.game,
+            pos,
+            layer,
+            socketId,
+            joinMsg,
+            ip,
+            joinData.findGameIp,
+            joinData.userId,
+        );
 
         this.socketIdToPlayer.set(socketId, player);
 
@@ -209,21 +226,28 @@ export class PlayerBarn {
         this.aliveCountDirty = true;
         this.game.pluginManager.emit("playerJoin", player);
 
-        if (!this.game.started) {
-            this.game.started = this.game.modeManager.isGameStarted();
-            if (this.game.started) {
-                this.game.gas.advanceGasStage();
-            }
-        }
-
         this.game.updateData();
 
         return player;
     }
 
     update(dt: number) {
+        let sendWinEmote = false;
+        if (this.game.over && !this.sentWinEmotes) {
+            this.sendWinEmoteTicker -= dt;
+            if (this.sendWinEmoteTicker <= 0) {
+                sendWinEmote = true;
+                this.sentWinEmotes = true;
+            }
+        }
+
         for (let i = 0; i < this.players.length; i++) {
-            this.players[i].update(dt);
+            const player = this.players[i];
+            player.update(dt);
+
+            if (!player.dead && sendWinEmote) {
+                player.emoteFromSlot(EmoteSlot.Win);
+            }
         }
 
         // doing this after updates ensures that gameover msgs sent are always accurate
@@ -379,20 +403,21 @@ export class PlayerBarn {
         this.teams.push(team);
     }
 
-    getGroupAndTeam(joinData: JoinTokenData):
+    getGroupAndTeam({ groupData }: JoinTokenData):
         | {
               group?: Group;
               team?: Team;
           }
         | undefined {
         if (!this.game.isTeamMode) return undefined;
-        let group = this.groupsByHash.get(joinData.groupHashToJoin);
+
+        let group = this.groupsByHash.get(groupData.groupHashToJoin);
         let team = this.game.map.factionMode ? this.getSmallestTeam() : undefined;
 
-        if (!group && joinData.autoFill) {
+        if (!group && groupData.autoFill) {
             const groups = team ? team.getGroups() : this.groups;
             group = groups.find((group) => {
-                return group.autoFill && group.canJoin(joinData.playerCount);
+                return group.autoFill && group.canJoin(groupData.playerCount);
             });
         }
 
@@ -400,17 +425,17 @@ export class PlayerBarn {
         // but keeping it just in case
         // since more than 4 players in a group crashes the client
         if (!group || group.players.length >= this.game.teamMode) {
-            group = this.addGroup(joinData.autoFill);
+            group = this.addGroup(groupData.autoFill);
         }
 
         // only reserve slots on the first time this join token is used
         // since the playerCount counts for other people from the team menu
         // using the same token
-        if (group.hash !== joinData.groupHashToJoin) {
-            group.reservedSlots += joinData.playerCount;
+        if (group.hash !== groupData.groupHashToJoin) {
+            group.reservedSlots += groupData.playerCount;
         }
 
-        joinData.groupHashToJoin = group.hash;
+        groupData.groupHashToJoin = group.hash;
 
         // pre-existing group not created during this function call
         // players who join from the same group need the same team
@@ -455,13 +480,23 @@ export class PlayerBarn {
             .sort((a, b) => b.kills - a.kills)[0];
     }
 
-    addEmote(playerId: number, pos: Vec2, type: string, isPing: boolean, itemType = "") {
+    addEmote(type: string, playerId: number, itemType = "") {
         this.emotes.push({
+            isPing: false,
             playerId,
-            pos,
+            pos: v2.create(0, 0),
             type,
-            isPing,
             itemType,
+        });
+    }
+
+    addMapPing(type: string, pos: Vec2, playerId = 0) {
+        this.emotes.push({
+            isPing: true,
+            type,
+            pos,
+            playerId,
+            itemType: "",
         });
     }
 }
@@ -616,7 +651,7 @@ export class Player extends BaseGameObject {
         return this.weaponManager.activeWeapon;
     }
 
-    _disconnected = false;
+    private _disconnected = false;
 
     get disconnected(): boolean {
         return this._disconnected;
@@ -951,6 +986,9 @@ export class Player extends BaseGameObject {
         if (this.group && !this.group.spawnLeader) {
             this.group.spawnLeader = this;
         }
+
+        this.game.grid.updateObject(this);
+        this.setDirty();
     }
 
     removeRole(): void {
@@ -1054,6 +1092,9 @@ export class Player extends BaseGameObject {
             }
         } else if (type === "fabricate") {
             this.fabricateRefillTicker = 0;
+        } else if (type === "firepower") {
+            this.weaponManager.reload(GameConfig.WeaponSlot.Primary);
+            this.weaponManager.reload(GameConfig.WeaponSlot.Secondary);
         }
 
         this.recalculateScale();
@@ -1122,6 +1163,12 @@ export class Player extends BaseGameObject {
 
     damageTaken = 0;
     damageDealt = 0;
+
+    // infinity since we aren't dead yet ;)
+    // this is used for sorting and getting player ranks
+    // first player to die is 0, second is 1 etc
+    killedIndex = Infinity;
+
     kills = 0;
     timeAlive = 0;
 
@@ -1135,20 +1182,41 @@ export class Player extends BaseGameObject {
 
     obstacleOutfit?: Obstacle;
 
+    /**
+     * Only used for match data saving!
+     * __id is for the game itself, __id can be reused when a player despawns
+     * which can break the matchData
+     */
+    matchDataId: number;
+
+    userId: string | null = null;
+    ip: string;
+    // see comment on server/src/api/schema.ts
+    // about logging find_game IP's
+    findGameIp: string;
+
     constructor(
         game: Game,
         pos: Vec2,
         layer: number,
         socketId: string,
         joinMsg: net.JoinMsg,
+        ip: string,
+        findGameIp: string,
+        userId: string | null,
     ) {
         super(game, pos);
+
+        this.matchDataId = game.playerBarn.nextMatchDataId++;
 
         this.layer = layer;
 
         this.socketId = socketId;
+        this.ip = ip;
+        this.findGameIp = findGameIp;
+        this.userId = userId;
 
-        this.name = validateUserName(joinMsg.name);
+        this.name = validateUserName(joinMsg.name).validName;
 
         this.isMobile = joinMsg.isMobile;
 
@@ -1212,54 +1280,7 @@ export class Player extends BaseGameObject {
             this.addPerk(perk.type, perk.droppable);
         }
 
-        /**
-         * Checks if an item is present in the player's loadout
-         */
-        const isItemInLoadout = (item: string, category: string) => {
-            if (!UnlockDefs.unlock_default.unlocks.includes(item)) return false;
-
-            const def = GameObjectDefs[item];
-            if (!def || def.type !== category) return false;
-
-            return true;
-        };
-
-        if (
-            isItemInLoadout(joinMsg.loadout.outfit, "outfit") &&
-            joinMsg.loadout.outfit !== "outfitBase"
-        ) {
-            this.setOutfit(joinMsg.loadout.outfit);
-        } else {
-            this.setOutfit(defaultItems.outfit);
-        }
-
-        if (
-            isItemInLoadout(joinMsg.loadout.melee, "melee") &&
-            joinMsg.loadout.melee != "fists"
-        ) {
-            this.weapons[GameConfig.WeaponSlot.Melee].type = joinMsg.loadout.melee;
-        }
-
-        const loadout = this.loadout;
-
-        if (isItemInLoadout(joinMsg.loadout.heal, "heal")) {
-            loadout.heal = joinMsg.loadout.heal;
-        }
-        if (isItemInLoadout(joinMsg.loadout.boost, "boost")) {
-            loadout.boost = joinMsg.loadout.boost;
-        }
-
-        const emotes = joinMsg.loadout.emotes;
-        for (let i = 0; i < emotes.length; i++) {
-            const emote = emotes[i];
-            if (i > GameConfig.EmoteSlot.Count) break;
-
-            if (emote === "" || !isItemInLoadout(emote, "emote")) {
-                continue;
-            }
-
-            loadout.emotes[i] = emote;
-        }
+        setLoadout(joinMsg, this);
 
         this.weaponManager.showNextThrowable();
         this.recalculateScale();
@@ -1401,10 +1422,8 @@ export class Player extends BaseGameObject {
             const emotes = Object.keys(EmotesDefs);
 
             this.game.playerBarn.addEmote(
-                this.__id,
-                this.pos,
                 emotes[Math.floor(Math.random() * emotes.length)],
-                false,
+                this.__id,
             );
         }
 
@@ -2247,33 +2266,52 @@ export class Player extends BaseGameObject {
             updateMsg.groupStatusDirty = true;
         }
 
-        for (let i = 0; i < playerBarn.emotes.length; i++) {
-            const emote = playerBarn.emotes[i];
+        const shouldSendEmote = (emote: Emote) => {
             const emotePlayer = game.objectRegister.getById(emote.playerId) as
                 | Player
                 | undefined;
+
+            const emoteDef = GameObjectDefs[emote.type];
+
             if (emotePlayer) {
-                const seeNormalEmote =
-                    !emote.isPing && player.visibleObjects.has(emotePlayer);
-
-                const partOfGroup = emotePlayer.groupId === player.groupId;
-
-                if ((GameObjectDefs[emote.type] as EmoteDef)?.teamOnly && !partOfGroup) {
-                    continue;
+                if (!emote.isPing && !player.visibleObjects.has(emotePlayer)) {
+                    return false;
                 }
 
-                const isTeamLeader =
-                    emotePlayer.role == "leader" && emotePlayer.teamId === player.teamId;
-                const seePing =
-                    (emote.isPing || emote.itemType) && (partOfGroup || isTeamLeader);
-                if (seeNormalEmote || seePing) {
-                    updateMsg.emotes.push(emote);
+                // regular emotes: always send if visible
+                if (!emote.isPing && !(emoteDef as EmoteDef).teamOnly) {
+                    return true;
                 }
-            } else if (emote.playerId === 0 && emote.isPing) {
-                // map pings generated by the game like airdrops
+
+                // part of the same group
+                if (emotePlayer?.groupId === player.groupId) {
+                    return true;
+                }
+
+                // faction team leader
+                if (
+                    emotePlayer.role === "leader" &&
+                    emotePlayer.teamId === player.teamId
+                ) {
+                    return true;
+                }
+            }
+
+            // always send map events pings
+            if (emote.isPing && emoteDef.type === "ping" && emoteDef.mapEvent) {
+                return true;
+            }
+
+            return false;
+        };
+
+        for (let i = 0; i < playerBarn.emotes.length; i++) {
+            const emote = playerBarn.emotes[i];
+            if (shouldSendEmote(emote)) {
                 updateMsg.emotes.push(emote);
             }
         }
+
         if (updateMsg.emotes.length > 255) {
             this.game.logger.warn(
                 "Too many new emotes created!",
@@ -2433,6 +2471,8 @@ export class Player extends BaseGameObject {
         if (this._health < 0) this._health = 0;
         if (this.dead) return;
         if (this.downed && this.downedDamageTicker > 0) return;
+        // cobalt players on role picker menu
+        if (this.game.map.perkMode && !this.role) return;
 
         const sourceIsPlayer = params.source?.__type === ObjectType.Player;
 
@@ -2563,6 +2603,11 @@ export class Player extends BaseGameObject {
         this.downedDamageTicker = GameConfig.player.downedDamageBuffer;
         this.boost = 0;
         this.health = 100;
+
+        if (this.game.gas.currentRad <= 0.1) {
+            this.health = 50;
+        }
+
         this.animType = GameConfig.Anim.None;
         this.setDirty();
 
@@ -2602,11 +2647,13 @@ export class Player extends BaseGameObject {
     }
 
     killedBy: Player | undefined;
+    killedIds: number[] = [];
 
     kill(params: DamageParams): void {
         if (this.dead) return;
         if (this.downed) this.downed = false;
         this.dead = true;
+        this.killedIndex = this.game.playerBarn.nextKilledNumber++;
         this.boost = 0;
         this.actionType = GameConfig.Action.None;
         this.actionSeq++;
@@ -2651,7 +2698,9 @@ export class Player extends BaseGameObject {
         if (params.source instanceof Player) {
             const source = params.source;
             this.killedBy = source;
+
             if (source !== this && source.teamId !== this.teamId) {
+                source.killedIds.push(this.matchDataId);
                 source.kills++;
 
                 if (source.isKillLeader) {
@@ -2665,10 +2714,9 @@ export class Player extends BaseGameObject {
                 }
 
                 if (source.role === "woods_king") {
-                    this.game.playerBarn.addEmote(0, this.pos, "ping_woodsking", true);
+                    this.game.playerBarn.addMapPing("ping_woodsking", this.pos);
                 }
             }
-
             killMsg.killerId = source.__id;
             killMsg.killCreditId = source.__id;
             killMsg.killerKills = source.kills;
@@ -2688,7 +2736,7 @@ export class Player extends BaseGameObject {
             for (let i = 0; i < 12; i++) {
                 const velocity = v2.mul(v2.randomUnit(), util.random(2, 5));
                 this.game.projectileBarn.addProjectile(
-                    this.playerId,
+                    this.__id,
                     martyrNadeType,
                     this.pos,
                     1,
@@ -2865,14 +2913,7 @@ export class Player extends BaseGameObject {
         this.perkTypes.length = 0;
 
         // death emote
-        if (this.loadout.emotes[GameConfig.EmoteSlot.Death] != "") {
-            this.game.playerBarn.addEmote(
-                this.__id,
-                this.pos,
-                this.loadout.emotes[GameConfig.EmoteSlot.Death],
-                false,
-            );
-        }
+        this.emoteFromSlot(GameConfig.EmoteSlot.Death);
 
         // Building gore region (club pool)
         const objs = this.game.grid.intersectCollider(this.collider);
@@ -2918,6 +2959,12 @@ export class Player extends BaseGameObject {
             return undefined;
         };
         return findAliveKiller(this.killedBy);
+    }
+
+    canDespawn() {
+        return (
+            this.timeAlive < GameConfig.player.minActiveTime && !this.dead && !this.downed
+        );
     }
 
     isReloading() {
@@ -3040,7 +3087,7 @@ export class Player extends BaseGameObject {
 
         // medics always emote the healing/boost item they're using
         if (this.role == "medic") {
-            this.game.playerBarn.addEmote(this.__id, this.pos, "emote_loot", false, item);
+            this.game.playerBarn.addEmote("emote_loot", this.__id, item);
         }
 
         this.cancelAction();
@@ -3086,7 +3133,7 @@ export class Player extends BaseGameObject {
 
         // medics always emote the healing/boost item they're using
         if (this.role == "medic") {
-            this.game.playerBarn.addEmote(this.__id, this.pos, "emote_loot", false, item);
+            this.game.playerBarn.addEmote("emote_loot", this.__id, item);
         }
 
         this.cancelAction();
@@ -3176,6 +3223,7 @@ export class Player extends BaseGameObject {
         this.ack = msg.seq;
 
         if (this.dead) return;
+        if (this.game.map.perkMode && !this.role) return;
 
         if (!v2.eq(this.dir, msg.toMouseDir)) {
             this.setPartDirty();
@@ -3839,7 +3887,7 @@ export class Player extends BaseGameObject {
 
                 const emoteType = `emote_${type}`;
                 if (GameObjectDefs[`emote_${type}`]) {
-                    this.game.playerBarn.addEmote(this.__id, this.pos, emoteType, false);
+                    this.game.playerBarn.addEmote(emoteType, this.__id);
                 }
 
                 const perkSlotType = this.perks.find(
@@ -4046,13 +4094,7 @@ export class Player extends BaseGameObject {
 
         this.setDirty();
 
-        this.game.playerBarn.addEmote(
-            this.__id,
-            this.pos,
-            "emote_loot",
-            false,
-            chosenWeaponType,
-        );
+        this.game.playerBarn.addEmote("emote_loot", this.__id, chosenWeaponType);
     }
 
     dropLoot(type: string, count = 1, useCountForAmmo?: boolean) {
@@ -4101,6 +4143,7 @@ export class Player extends BaseGameObject {
 
     dropItem(dropMsg: net.DropItemMsg): void {
         if (this.dead) return;
+        if (this.game.map.perkMode && !this.role) return;
 
         const itemDef = GameObjectDefs[dropMsg.item] as LootDef;
         if (!itemDef) return;
@@ -4232,6 +4275,7 @@ export class Player extends BaseGameObject {
 
     emoteFromMsg(msg: net.EmoteMsg) {
         if (this.dead) return;
+        if (this.game.map.perkMode && !this.role) return;
         if (this.emoteHardTicker > 0) return;
 
         const emoteMsg = msg as net.EmoteMsg;
@@ -4246,6 +4290,8 @@ export class Player extends BaseGameObject {
             if (emoteDef.mapEvent) {
                 return;
             }
+
+            this.game.playerBarn.addMapPing(emoteMsg.type, emoteMsg.pos, this.__id);
         } else {
             if (emoteDef.type !== "emote") {
                 return;
@@ -4253,6 +4299,12 @@ export class Player extends BaseGameObject {
 
             if (!emoteDef.teamOnly && (emoteIdx < 0 || emoteIdx > 3)) {
                 return;
+            }
+
+            if (emoteDef.teamOnly) {
+                this.game.playerBarn.addEmote(emoteMsg.type, this.__id);
+            } else {
+                this.emoteFromSlot(emoteIdx);
             }
         }
 
@@ -4263,17 +4315,6 @@ export class Player extends BaseGameObject {
                     ? this.emoteHardTicker
                     : GameConfig.player.emoteHardCooldown * 1.5;
         }
-
-        if (this.game.map.potatoMode && emoteDef.type === "emote") {
-            emoteMsg.type = "emote_potato";
-        }
-
-        this.game.playerBarn.addEmote(
-            this.__id,
-            emoteMsg.pos,
-            emoteMsg.type,
-            emoteMsg.isPing,
-        );
     }
 
     processEditMsg(msg: net.EditMsg) {
@@ -4455,6 +4496,18 @@ export class Player extends BaseGameObject {
         this.setDirty();
     }
 
+    emoteFromSlot(slot: EmoteSlot) {
+        let emote = this.loadout.emotes[slot];
+
+        if (!emote) return;
+
+        if (this.game.map.potatoMode) {
+            emote = "emote_potato";
+        }
+
+        this.game.playerBarn.addEmote(emote, this.__id);
+    }
+
     recalculateScale() {
         let scale = 1;
         for (let i = 0; i < this.perks.length; i++) {
@@ -4578,7 +4631,7 @@ export class Player extends BaseGameObject {
         this.sendData(stream.getBuffer());
     }
 
-    sendData(buffer: ArrayBuffer | Uint8Array): void {
+    sendData(buffer: Uint8Array): void {
         this.game.sendSocketMsg(this.socketId, buffer);
     }
 

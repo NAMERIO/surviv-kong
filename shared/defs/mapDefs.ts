@@ -16,6 +16,21 @@ import { WoodsSnow } from "./maps/woodsSnowDefs";
 import { WoodsSpring } from "./maps/woodsSpringDefs";
 import { WoodsSummer } from "./maps/woodsSummerDefs";
 import { May } from "./maps/mayDefs";
+import type { MapId } from "./types/misc";
+
+export type Atlas =
+    | "gradient"
+    | "loadout"
+    | "shared"
+    | "main"
+    | "desert"
+    | "faction"
+    | "halloween"
+    | "potato"
+    | "snow"
+    | "woods"
+    | "cobalt"
+    | "savannah";
 
 export const MapDefs = {
     main: Main,
@@ -37,23 +52,8 @@ export const MapDefs = {
     may: May,
 } satisfies Record<string, MapDef>;
 
-export type Atlas =
-    | "gradient"
-    | "loadout"
-    | "shared"
-    | "main"
-    | "desert"
-    | "faction"
-    | "halloween"
-    | "potato"
-    | "snow"
-    | "woods"
-    | "cobalt"
-    | "savannah"
-    | "may";
-
 export interface MapDef {
-    mapId: number;
+    mapId: MapId;
     desc: {
         name: string;
         icon: string;
