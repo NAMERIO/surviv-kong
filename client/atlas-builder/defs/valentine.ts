@@ -4,10 +4,20 @@ import { BuildingSprites } from "./buildings";
 export const ValentineAtlas: AtlasDef = {
     compress: true,
     images: [
-        ...BuildingSprites.pavilion,
-        ...BuildingSprites.bunker_eye,
-        ...BuildingSprites.bunker_hatchet,
-
         "map/map-tree-13.svg",
+        "map/bush-rose.svg",
+        "map/map-bush-07sp.svg",
+        "map/map-candy-store-basket.svg",
+        "map/map-candy-store-display-01.svg",
+        "map/map-candy-store-display-02.svg",
+        "map/map-candy-store-display-03.svg",
+        "map/map-candy-store-display-04.svg",
+        "map/map-candy-store-display-05.svg",
+        "map/map-candy-store-display-06.svg",
+        "map/map-candy-store-front-desk.svg",
+        "map/map-crate-02b.svg",
+        "map/map-crate-frenemies-metal.svg",
+        "map/map-candy-store-ceiling-01.svg",
+        "map/map-candy-store-firstfloor.svg"
     ],
 };

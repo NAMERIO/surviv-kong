@@ -14,7 +14,7 @@ import { Savannah } from "./maps/savannahDefs";
 import { Snow } from "./maps/snowDefs";
 import { testFaction, testNormal } from "./maps/testDefs";
 import { Turkey } from "./maps/turkeyDefs";
-import { Valentine } from "./maps/valentine";
+import { Valentine } from "./maps/valentineDef";
 import { Woods } from "./maps/woodsDefs";
 import { WoodsSnow } from "./maps/woodsSnowDefs";
 import { WoodsSpring } from "./maps/woodsSpringDefs";
