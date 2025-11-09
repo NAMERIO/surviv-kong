@@ -36,10 +36,7 @@ async function extractEmbeddedPng(svgPath: string): Promise<string | null> {
             const canvas = createCanvas(width, height);
             const ctx = canvas.getContext("2d");
             ctx.drawImage(image, 0, 0, width, height);
-            const scaledPath = outPath.replace(".embedded.png", ".scaled.png");
-            fs.writeFileSync(scaledPath, canvas.toBuffer("image/png"));
-            fs.unlinkSync(outPath);
-            return scaledPath;
+            fs.writeFileSync(outPath, canvas.toBuffer("image/png"));
         }
 
         return outPath;
