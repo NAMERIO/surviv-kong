@@ -11041,7 +11041,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         },
     } as unknown as Partial<ObstacleDef>),
     tree_13: createTree({
-        map: { color: 0xe31663, scale: 3 },
+        map: { display: true, color: 0xe31663, scale: 3 },
         img: {
             sprite: "map-tree-13.img",
             tint: 0xffffff,

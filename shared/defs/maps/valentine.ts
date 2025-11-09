@@ -5,8 +5,8 @@ const mapDef: PartialMapDef = {
     mapId: 5,
     desc: {
         name: "Valentine",
-        icon: "img/gui/loot-weapon-double-lasr-gun.svg",
-        buttonCss: "btn-mode-may",
+        icon: "img/gui/loot-medical-chocolateBox.svg",
+        buttonCss: "btn-mode-valentine",
     },
     assets: {
         audio: [],
