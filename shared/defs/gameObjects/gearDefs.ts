@@ -618,7 +618,7 @@ const AmmoDefs: Record<string, AmmoDef> = {
             sprite: "loot-ammo-box.img",
             scale: 0.2,
             tint: 0xffc0cb,
-            tintDark: 0xffc0cb
+            tintDark: 0xffc0cb,
         },
         sound: {
             pickup: "ammo_pickup_01",

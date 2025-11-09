@@ -1954,15 +1954,15 @@ const ParticleDefs: Record<string, ParticleDef> = {
         },
     },
     explosionHeartBurst: {
-        image: ['part-frag-burst-01.img'],
+        image: ["part-frag-burst-01.img"],
         life: 0.5,
         drag: 0.0,
         rotVel: 0.0,
         scale: { start: 1.0, end: 4.0, lerp: new Range(0.0, 1.0) },
         alpha: { start: 1.0, end: 0.0, lerp: new Range(0.75, 1.0) },
         color: function color() {
-            return util.rgbToInt(util.hsvToRgb(0.9340, 0.9860, 0.8431));
-        }
+            return util.rgbToInt(util.hsvToRgb(0.934, 0.986, 0.8431));
+        },
     },
     explosionMIRV: {
         image: ["part-frag-burst-01.img"],
@@ -2092,19 +2092,21 @@ const ParticleDefs: Record<string, ParticleDef> = {
         color: 0xc4a80a,
     },
     explosionHeart: {
-        image: ['part-frag-burst-01.img'],
+        image: ["part-frag-burst-01.img"],
         life: 0.5,
         drag: 0.0,
         rotVel: 0.0,
-        scale: { 
-            start: 1.0, 
-            end: 4.0, 
-            lerp: new Range(0.0, 1.0) },
-        alpha: { 
-            start: 1.0, 
-            end: 0.0, 
-            lerp: new Range(0.75, 1.0) },
-        color: 0xfd6ba5
+        scale: {
+            start: 1.0,
+            end: 4.0,
+            lerp: new Range(0.0, 1.0),
+        },
+        alpha: {
+            start: 1.0,
+            end: 0.0,
+            lerp: new Range(0.75, 1.0),
+        },
+        color: 0xfd6ba5,
     },
     airdropSmoke: {
         image: ["part-smoke-02.img", "part-smoke-03.img"],
@@ -2695,15 +2697,19 @@ const ParticleDefs: Record<string, ParticleDef> = {
         color: 16770437,
     },
     heart_impact: {
-        image: ['part-potato-01.img'],
+        image: ["part-potato-01.img"],
         life: new Range(0.5, 1.0),
         drag: new Range(0.0, 0.0),
         rotVel: new Range(0.25 * Math.PI, 0.5 * Math.PI),
-        scale: { start: new Range(0.13, 0.23), end: new Range(0.07, 0.14), lerp: new Range(0.0, 1.0) },
+        scale: {
+            start: new Range(0.13, 0.23),
+            end: new Range(0.07, 0.14),
+            lerp: new Range(0.0, 1.0),
+        },
         alpha: { start: 1.0, end: 0.0, lerp: new Range(0.9, 1.0) },
         color: function color() {
             return util.rgbToInt(util.hsvToRgb(0.0, 1.0, util.random(0.7, 1.0)));
-        }
+        },
     },
     heal_basic: {
         image: ["part-heal-basic.img"],

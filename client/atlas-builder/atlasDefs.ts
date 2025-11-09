@@ -11,8 +11,8 @@ import { PotatoAtlas } from "./defs/potato";
 import { SavannahAtlas } from "./defs/savannah";
 import { SharedAtlas } from "./defs/shared";
 import { SnowAtlas } from "./defs/snow";
-import { WoodsAtlas } from "./defs/woods";
 import { ValentineAtlas } from "./defs/valentine";
+import { WoodsAtlas } from "./defs/woods";
 
 export interface AtlasDef {
     /**

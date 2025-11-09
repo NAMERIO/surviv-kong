@@ -48,9 +48,9 @@ const mapDef: PartialMapDef = {
                 outhouse_01: 5,
                 loot_tier_1: 24,
                 loot_tier_beach: 4,
-            }
+            },
         ],
-    }
+    },
 };
 
 export const Valentine = util.mergeDeep({}, Main, mapDef);

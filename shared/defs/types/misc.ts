@@ -10,7 +10,7 @@ export enum MapId {
     Halloween = 6,
     Cobalt = 7,
     Birthday = 8,
-    Valentine = 9, 
+    Valentine = 9,
     May = 10,
 }
 

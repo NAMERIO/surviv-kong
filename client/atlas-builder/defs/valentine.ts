@@ -8,6 +8,6 @@ export const ValentineAtlas: AtlasDef = {
         ...BuildingSprites.bunker_eye,
         ...BuildingSprites.bunker_hatchet,
 
-        "map/map-tree-13.svg"
+        "map/map-tree-13.svg",
     ],
 };
