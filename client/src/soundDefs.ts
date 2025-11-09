@@ -808,7 +808,6 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             path: "audio/ui/stow_weapon_01.mp3",
             volume: 1,
         },
-
     },
     hits: {
         stone_bullet_hit_01: {
@@ -1023,7 +1022,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
         },
         lasr_hit_01: {
             path: "audio/hits/lasr_hit_01.mp3",
-            volume: 1.0
+            volume: 1.0,
         },
     },
     sfx: {
@@ -1233,7 +1232,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
         },
         lasr_swing_01: {
             path: "audio/sfx/lasr_swing_01.mp3",
-            volume: 1.0
+            volume: 1.0,
         },
         bullet_whiz_01: {
             path: "audio/sfx/bullet_whiz_01.mp3",
@@ -1909,9 +1908,9 @@ const Groups: Record<string, { channel: string; sounds: string[] }> = {
         channel: "hits",
         sounds: ["organic_hit_01"],
     },
-    "lasr_hit": {
+    lasr_hit: {
         channel: "hits",
-        sounds: ["lasr_hit_01"]
+        sounds: ["lasr_hit_01"],
     },
     piano_hit: {
         channel: "hits",

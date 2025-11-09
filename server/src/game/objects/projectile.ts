@@ -14,7 +14,6 @@ import { BaseGameObject } from "./gameObject";
 // and exploding, from recorded packets from the original game
 const gravity = 10.5;
 
-
 export class ProjectileBarn {
     projectiles: Projectile[] = [];
     constructor(readonly game: Game) {}
@@ -92,7 +91,6 @@ export class Projectile extends BaseGameObject {
 
     private activateTime: number = 0;
     private triggeredTime: number | null = null;
-
 
     strobe?: {
         timeToPing: number;
@@ -194,7 +192,7 @@ export class Projectile extends BaseGameObject {
                             "",
                             "",
                             GameConfig.DamageType.Player,
-                            this
+                            this,
                         );
                         this.destroy();
                     }
@@ -228,8 +226,6 @@ export class Projectile extends BaseGameObject {
                 }
             }
         }
-        
-        
 
         const def = GameObjectDefs[this.type] as ThrowableDef;
         //

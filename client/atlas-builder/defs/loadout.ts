@@ -331,7 +331,6 @@ export const LoadoutAtlas: AtlasDef = {
         "loot/loot-medical-pill.svg",
         "loot/loot-medical-soda.svg",
 
-
         "loot/loot-melee-bayonet-rugged.svg",
         "loot/loot-melee-bayonet-woodland.svg",
         "loot/loot-melee-bonesaw-healer.svg",
@@ -371,9 +370,6 @@ export const LoadoutAtlas: AtlasDef = {
         "loot/lasr-sword-01.svg",
         "loot/lasr-sword-02.svg",
         "loot/lasr-sword-03.svg",
-
-
-
 
         "loot/loot-pack-00.svg",
         "loot/loot-pack-01.svg",
@@ -430,7 +426,6 @@ export const LoadoutAtlas: AtlasDef = {
         "loot/loot-scope-02.svg",
         "loot/loot-scope-03.svg",
         "loot/loot-scope-04.svg",
-
 
         "loot/loot-shirt-01.svg",
         "loot/loot-shirt-calaca.svg",
@@ -498,7 +493,6 @@ export const LoadoutAtlas: AtlasDef = {
         "loot/loot-multi-tusking-outfit.svg",
         "loot/loot-max-attack-outfit.svg",
         "loot/loot-lustrous-paladin-outfit.svg",
-
 
         "loot/loot-throwable-frag-egg.svg",
         "loot/loot-throwable-frag.svg",
@@ -578,7 +572,6 @@ export const LoadoutAtlas: AtlasDef = {
         "loot/loot-weapon-vss.svg",
         "loot/loot-weapon-double-lasr-gun.svg",
         "loot/loot-weapon-lasr-gun.svg",
-
 
         "loot/loot-xp-bone-01.svg",
         "loot/loot-xp-book-01.svg",
@@ -1108,8 +1101,6 @@ export const LoadoutAtlas: AtlasDef = {
         "player/outfit-chrome-accessory.svg",
 
         "player/player-back-village-ninja.svg",
-
-
 
         "proj/proj-bomb-iron-01.svg",
         "proj/proj-frag-nopin-01.svg",

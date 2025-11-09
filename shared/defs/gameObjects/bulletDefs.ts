@@ -858,7 +858,7 @@ const SkinDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "laser",
         tracerWidth: 0.12,
-        tracerLength: 0.8
+        tracerLength: 0.8,
     },
 };
 

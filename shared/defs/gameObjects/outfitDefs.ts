@@ -15,7 +15,7 @@ export interface OutfitDef {
         backpackSprite: string;
         frontSprite?: string;
         frontSpritePos?: { x: number; y: number };
-        aboveHand? : Boolean
+        aboveHand?: Boolean;
     };
     lootImg: {
         sprite: string;
@@ -293,7 +293,7 @@ const SkinDefs: Record<string, OutfitDef> = {
             backpackTint: 13644309,
             backpackSprite: "player-circle-base-01.img",
             frontSpritePos: { x: -4, y: 0 },
-            frontSprite: "player-accessory-outfitFireball.img"
+            frontSprite: "player-accessory-outfitFireball.img",
         },
         lootImg: {
             sprite: "loot-shirt-outfitFireball.img",
@@ -338,7 +338,7 @@ const SkinDefs: Record<string, OutfitDef> = {
             backpackTint: 7667712,
             backpackSprite: "player-circle-base-02.img",
             frontSpritePos: { x: -5, y: 0 },
-            frontSprite: "player-accessory-dragon-tails.img"
+            frontSprite: "player-accessory-dragon-tails.img",
         },
         lootImg: {
             sprite: "loot-dragon-tails-outfit.img",
@@ -462,10 +462,6 @@ const SkinDefs: Record<string, OutfitDef> = {
         lore: "For those who wield the power of the pan.",
     }),
 
-
-
-
-
     outfitSpeedoSunburn: defineOutfitSkin("outfitBase", {
         name: "Speedo Sunburn",
         noDropOnDeath: true,
@@ -486,29 +482,6 @@ const SkinDefs: Record<string, OutfitDef> = {
         rarity: 3,
         lore: "For those who wield the power of the pan.",
     }),
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     outfitWheat: defineOutfitSkin("outfitBase", {
         name: "Splintered Wheat",

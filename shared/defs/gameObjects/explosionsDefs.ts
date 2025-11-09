@@ -225,5 +225,4 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         explosionEffectType: "frag",
         decalType: "decal_frag_explosion",
     },
-    
 };

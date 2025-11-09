@@ -1828,11 +1828,11 @@ export class Player extends BaseGameObject {
 
         if (this.pushBackTime > 0) {
             // Move player backward using knockback direction
-            this.moveVel.x = -this.pushBack.x * this.speed * 0.5;  // Apply knockback direction to moveVel
-            this.moveVel.y = -this.pushBack.y * this.speed * 0.5;  // Apply knockback direction to moveVel
-            this.pushBackTime -= dt;  // Reduce knockback time each frame
+            this.moveVel.x = -this.pushBack.x * this.speed * 0.5; // Apply knockback direction to moveVel
+            this.moveVel.y = -this.pushBack.y * this.speed * 0.5; // Apply knockback direction to moveVel
+            this.pushBackTime -= dt; // Reduce knockback time each frame
         }
-        
+
         //
         // Calculate new speed, position and check for collision with obstacles
         //
@@ -3320,7 +3320,7 @@ export class Player extends BaseGameObject {
             (hasAoeHeal ? 0.75 : 1) * itemDef.useTime,
         );
     }
-    
+
     usePulseEffect(): void {
         const origin = this.pos;
         const rad = 300;
@@ -3346,7 +3346,7 @@ export class Player extends BaseGameObject {
             const dy = proj.pos.y - origin.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
             if (dist > rad || dist === 0) continue;
-    
+
             const f = (1 - dist / rad) * force;
             const nx = dx / dist;
             const ny = dy / dist;
@@ -3359,11 +3359,11 @@ export class Player extends BaseGameObject {
             const dy = loot.pos.y - origin.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
             if (dist > rad || dist === 0) continue;
-    
+
             const f = (1 - dist / rad) * force;
             const nx = dx / dist;
             const ny = dy / dist;
-    
+
             if (typeof loot.push === "function") {
                 loot.push(v2.create(nx, ny), f);
             } else if (loot.vel) {
@@ -4796,7 +4796,7 @@ export class Player extends BaseGameObject {
     //     const itemDef = GameObjectDefs[item];
     //     if (!itemDef || itemDef.type !== "boost") return;
     //     if (!this.inventory[item]) return;
-    
+
     //     this.cancelAction();
     //     this.doAction(
     //         item,
@@ -4804,5 +4804,4 @@ export class Player extends BaseGameObject {
     //         itemDef.useTime,
     //     );
     // }
-    
 }

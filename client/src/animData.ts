@@ -144,7 +144,6 @@ export const IdlePoses: Record<string, Partial<Record<Bones, Pose>>> = {
         [Bones.HandL]: new Pose(v2.create(10.5, 0.0)),
         [Bones.HandR]: new Pose(v2.create(18.0, 0.5)),
     },
-    
 };
 
 const def = GameObjectDefs as unknown as Record<string, MeleeDef>;
@@ -573,10 +572,8 @@ export const Animations: Record<
             }),
         ],
         effects: [
-            effect(0.0, 'animPlaySound', { sound: 'swing' }),
-            effect(0.25, 'animMeleeCollision', {}),
+            effect(0.0, "animPlaySound", { sound: "swing" }),
+            effect(0.25, "animMeleeCollision", {}),
         ],
     },
-    
-    
 };

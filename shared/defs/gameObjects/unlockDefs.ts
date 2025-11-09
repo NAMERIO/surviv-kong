@@ -18,7 +18,7 @@ const _allowedMeleeSkins = [
     "bowie_frontier",
     "lasr_swrd",
     "lasr_swrd_02",
-    "lasr_swrd_03"
+    "lasr_swrd_03",
 ];
 const _allowedOutfits = [
     "outfitLustrousPaladin",
@@ -45,7 +45,7 @@ const _allowedOutfits = [
     // "outfitElf",
     // "outfitImperial",
     "outfitLumber",
-   // "outfitVerde",
+    // "outfitVerde",
     // "outfitPineapple",
     // "outfitTarkhany",
     // "outfitWaterElem",
@@ -53,16 +53,16 @@ const _allowedOutfits = [
     // "outfitMeteor",
     // "outfitIslander",
     // "outfitAqua",
-   // "outfitCoral",
-   // "outfitKhaki",
+    // "outfitCoral",
+    // "outfitKhaki",
     "outfitParma",
     "outfitParmaPrestige",
-   // "outfitCasanova",
-   // "outfitPrisoner",
+    // "outfitCasanova",
+    // "outfitPrisoner",
     // "outfitJester",
     "outfitWoodland",
     "outfitRoyalFortune",
-   // "outfitKeyLime",
+    // "outfitKeyLime",
     "outfitCobaltShell",
     "outfitCarbonFiber",
     "outfitDarkGloves",
@@ -549,7 +549,6 @@ export const UnlockDefs: Record<UnlockDefKey, UnlockDef> = {
                 ...Object.keys(CrosshairDefs),
                 ...PassDefs.pass_survivr1.items.map((item) => item.item),
             ]),
-            
         ],
     },
     unlock_new_account: {

@@ -1748,8 +1748,8 @@ export class Player implements AbstractObject {
         if (this.downed) {
             this.backpackSprite.visible = false;
         }
-        
-        // aura visual thing 
+
+        // aura visual thing
 
         if (this.m_action.type === Action.UseItem && this.m_action.item === "pulseBox") {
             const sprite = "part-aura-circle-02.img";
@@ -1783,7 +1783,9 @@ export class Player implements AbstractObject {
                 this.auraPulseDir = 1;
                 this.auraCircle.visible = false;
             } else {
-                const actionItemDef = GameObjectDefs[this.m_action.item] as HealDef | BoostDef;
+                const actionItemDef = GameObjectDefs[this.m_action.item] as
+                    | HealDef
+                    | BoostDef;
                 const sprite = actionItemDef?.aura?.sprite ?? "part-aura-circle-01.img";
                 const tint = actionItemDef?.aura?.tint ?? 0xff00ff;
                 const auraScale = 0.125;
@@ -1837,15 +1839,24 @@ export class Player implements AbstractObject {
             } else {
                 targetIndex = Math.min(handLIndex, handRIndex) - 1;
             }
-            const clampedIndex = Math.max(0, Math.min(targetIndex, this.bodyContainer.children.length - 1));
+            const clampedIndex = Math.max(
+                0,
+                Math.min(targetIndex, this.bodyContainer.children.length - 1),
+            );
             this.bodyContainer.setChildIndex(this.frontSprite, clampedIndex);
         } else {
             this.frontSprite.visible = false;
         }
-        
+
         // Force helmet + visor on top to prevent flickering during shooting/switching
-        this.bodyContainer.setChildIndex(this.helmetSprite, this.bodyContainer.children.length - 1);
-        this.bodyContainer.setChildIndex(this.visorSprite, this.bodyContainer.children.length - 1);
+        this.bodyContainer.setChildIndex(
+            this.helmetSprite,
+            this.bodyContainer.children.length - 1,
+        );
+        this.bodyContainer.setChildIndex(
+            this.visorSprite,
+            this.bodyContainer.children.length - 1,
+        );
 
         this.bodyContainer.scale.set(bodyScale, bodyScale);
     }

@@ -369,18 +369,18 @@ const BoostDefs: Record<string, BoostDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-01.img",
             borderTint: 0x000000,
-            scale: 0.2
+            scale: 0.2,
         },
         sound: {
             pickup: "soda_pickup_01",
-            use: "pulseBox_use_01"
+            use: "pulseBox_use_01",
         },
         aura: {
             sprite: "part-aura-circle-01.img",
-            tint: 0x199500
+            tint: 0x199500,
         },
-        emitter: "boost"
-    }
+        emitter: "boost",
+    },
 };
 
 export interface HealDef {

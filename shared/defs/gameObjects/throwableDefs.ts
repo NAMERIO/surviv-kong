@@ -819,36 +819,36 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.2
+            scale: 0.2,
         },
         worldImg: {
             sprite: "proj-mine-01.img",
             scale: 0.12,
-            tint: 16777215
+            tint: 16777215,
         },
         handImg: {
             equip: {
                 right: {
-                  sprite: "proj-mine-01.img",
-                  pos: { x: 4.2, y: 4.2 },
-                  scale: 0.14
+                    sprite: "proj-mine-01.img",
+                    pos: { x: 4.2, y: 4.2 },
+                    scale: 0.14,
                 },
                 left: {
-                  sprite: "none"
-                }
-              },
+                    sprite: "none",
+                },
+            },
             cook: {
                 right: {
                     sprite: "proj-mine-01.img",
                     pos: {
-                      x: 4.2,
-                      y: 4.2
+                        x: 4.2,
+                        y: 4.2,
                     },
-                    scale: 0.14
-                  },
-                  left: {
-                    sprite: "none"
-                  }
+                    scale: 0.14,
+                },
+                left: {
+                    sprite: "none",
+                },
             },
             throwing: {
                 right: { sprite: "none" },

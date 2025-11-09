@@ -29629,9 +29629,9 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             zIdx: 4,
         },
     },
-    crate_01m: createCrate({ 
+    crate_01m: createCrate({
         loot: [tierLoot("tier_soviet", 3, 5)],
-        img: { sprite: "lasr_Swrds_Crate.img" } 
+        img: { sprite: "lasr_Swrds_Crate.img" },
     }),
     bush_01m: createBush({
         img: { sprite: "lasr_swrds_bush.img" },

@@ -3380,33 +3380,33 @@ export const GunDefs: Record<string, GunDef> = {
         headshotMult: 2.0,
         speed: {
             equip: 0.0,
-            attack: 0.0
+            attack: 0.0,
         },
         lootImg: {
             sprite: "loot-weapon-lasr-gun.img",
             tint: 0x00ff00,
             border: "loot-circle-outer-01.img",
             borderTint: 0x000000,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-lasr-gun.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 0xFFFFFF,
+            tint: 0xffffff,
             leftHandOffset: { x: 0.0, y: 0.0 },
-            recoil: 1.0
+            recoil: 1.0,
         },
         particle: {
             shellScale: 0.0,
-            shellOffset: 0.0
+            shellOffset: 0.0,
         },
         sound: {
             shoot: "lasr_01",
             reload: "lasr_gun_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "deagle_switch_01"
-        }
+            deploy: "deagle_switch_01",
+        },
     },
     lasr_gun_dual: {
         name: "Dual Lasr Gun",
@@ -3437,33 +3437,32 @@ export const GunDefs: Record<string, GunDef> = {
         headshotMult: 2.0,
         speed: {
             equip: 0.0,
-            attack: 0.0
+            attack: 0.0,
         },
         lootImg: {
             sprite: "loot-weapon-double-lasr-gun.img",
             tint: 0x00ff00,
             border: "loot-circle-outer-01.img",
             borderTint: 0x000000,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-lasr-gun.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 0xFFFFFF,
+            tint: 0xffffff,
             leftHandOffset: { x: 0.0, y: 0.0 },
-            recoil: 1.0
+            recoil: 1.0,
         },
         particle: {
             shellScale: 0.0,
-            shellOffset: 0.0
+            shellOffset: 0.0,
         },
         sound: {
             shoot: "lasr_01",
             reload: "lasr_gun_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "deagle_switch_01"
-        }
+            deploy: "deagle_switch_01",
+        },
     },
-
 };

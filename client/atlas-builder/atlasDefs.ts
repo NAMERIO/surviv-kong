@@ -6,12 +6,12 @@ import { GradientAtlas } from "./defs/gradient";
 import { HalloweenAtlas } from "./defs/halloween";
 import { LoadoutAtlas } from "./defs/loadout";
 import { MainAtlas } from "./defs/main";
+import { MayAtlas } from "./defs/may";
 import { PotatoAtlas } from "./defs/potato";
 import { SavannahAtlas } from "./defs/savannah";
 import { SharedAtlas } from "./defs/shared";
 import { SnowAtlas } from "./defs/snow";
 import { WoodsAtlas } from "./defs/woods";
-import { MayAtlas } from "./defs/may";
 
 export interface AtlasDef {
     /**
