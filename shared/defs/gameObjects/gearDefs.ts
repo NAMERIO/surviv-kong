@@ -608,6 +608,22 @@ const AmmoDefs: Record<string, AmmoDef> = {
             pickup: "ammo_pickup_01",
         },
     },
+    heart_ammo: {
+        name: "Heart Ammo",
+        type: "ammo",
+        special: true,
+        hideUi: true,
+        minStackSize: 10,
+        lootImg: {
+            sprite: "loot-ammo-box.img",
+            scale: 0.2,
+            tint: 0xffc0cb,
+            tintDark: 0xffc0cb
+        },
+        sound: {
+            pickup: "ammo_pickup_01",
+        },
+    },
 };
 
 const BaseDefs = {

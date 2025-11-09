@@ -10,7 +10,7 @@ const mapDef: PartialMapDef = {
     },
     assets: {
         audio: [],
-        atlases: ["gradient", "loadout", "shared", "valentine"],
+        atlases: ["gradient", "loadout", "shared", "valentine", "main"],
     },
     biome: {
         colors: {
@@ -26,21 +26,19 @@ const mapDef: PartialMapDef = {
         },
         particles: {},
     },
-    gameMode: { maxPlayers: 80, sniperMode: true },
     mapGen: {
         densitySpawns: [
             {
+                tree_13: 400,
                 stone_01: 350,
                 barrel_01: 76,
                 silo_01: 8,
-                crate_01m: 38,
+                crate_01: 38,
                 crate_02: 4,
                 crate_03: 8,
-                crate_03x: 1,
-                bush_01m: 78,
+                bush_01: 78,
                 cache_06: 12,
-                tree_01: 120,
-                tree_02m: 200,
+                tree_01: 320,
                 hedgehog_01: 24,
                 container_01: 5,
                 container_02: 5,
@@ -50,20 +48,9 @@ const mapDef: PartialMapDef = {
                 outhouse_01: 5,
                 loot_tier_1: 24,
                 loot_tier_beach: 4,
-                crate_23: 30,
-            },
+            }
         ],
-        randomSpawns: [],
-        spawnReplacements: [
-            {
-                tree_01: "tree_01m",
-                teahouse_complex_01su: "teahouse_complex_01m",
-            },
-        ],
-    },
-    lootTable: {
-
-    },
+    }
 };
 
 export const Valentine = util.mergeDeep({}, Main, mapDef);

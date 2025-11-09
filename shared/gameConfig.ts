@@ -352,6 +352,13 @@ export const GameConfig = {
             saturated: 0xff0000,
             chambered: 0xff0000,
         },
+        heart: {
+            regular: 0xFEE2C6,
+            saturated: 0xffd9b3,
+            chambered: 0xff7f00,
+            alphaRate: 0.92,
+            alphaMin: 0.14
+        },
         shrapnel: { regular: 0x333333, saturated: 0x333333 },
         frag: { regular: 0xcb0000, saturated: 0xcb0000, apSaturated: 0xcb0000 },
         invis: { regular: 0, saturated: 0, chambered: 0, apSaturated: 0 },
