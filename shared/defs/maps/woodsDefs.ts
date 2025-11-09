@@ -23,14 +23,14 @@ const mapDef: PartialMapDef = {
     },
     biome: {
         colors: {
-            background: 2118510,
-            water: 3310251,
-            waterRipple: 11792639,
-            beach: 15709019,
-            riverbank: 7812619,
-            grass: 9339690,
-            underground: 1772803,
-            playerSubmerge: 2854052,
+            background: 0x20536e,
+            water: 0x3282ab,
+            waterRipple: 0xb3f0ff,
+            beach: 0xefb35b,
+            riverbank: 0x77360b,
+            grass: 0x8e832a,
+            underground: 0x1b0d03,
+            playerSubmerge: 0x2b8ca4,
         },
         particles: { camera: "falling_leaf" },
     },
@@ -72,6 +72,7 @@ const mapDef: PartialMapDef = {
             { name: "qbb97", count: 1, weight: 0.1 },
             { name: "bar", count: 1, weight: 3 },
             { name: "pkp", count: 1, weight: 0.005 },
+            { name: "m249", count: 1, weight: 0.008 },
         ],
         tier_ammo: [
             { name: "762mm", count: 60, weight: 3 },
@@ -113,6 +114,7 @@ const mapDef: PartialMapDef = {
             { name: "4xscope", count: 1, weight: 1 },
             { name: "8xscope", count: 1, weight: 0.5 },
             { name: "pkp", count: 1, weight: 0.05 },
+            { name: "m249", count: 1, weight: 0.05 },
         ],
         tier_airdrop_throwables: [
             { name: "frag", count: 2, weight: 1 },

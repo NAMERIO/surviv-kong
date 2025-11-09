@@ -75,8 +75,7 @@ npm i -g pnpm
 IF you want to have accounts, leaderboards and IP bans, you will have to install and set-up PostgreSQL database
 
 ```sh
-sudo apt -y postgresql
-sudo -u postgres initdb --locale=C.UTF-8 --encoding=UTF8 -D /var/lib/postgres/data --data-checksums
+sudo apt install -y postgresql
 sudo systemctl enable --now postgresql
 sudo -u postgres createuser survev
 sudo -u postgres createdb survev -O survev
@@ -100,7 +99,7 @@ pnpm survev-setup
 
 Build the client & server:
 ```sh
-pnpm -r build
+pnpm build
 ```
 
 ### Setting up NGINX
@@ -131,6 +130,21 @@ server {
 
     server_name _;
 
+    # Static files cache
+    location ~* \.(js|css|jpg|jpeg|png|gif|js|css|ico|svg)$ {
+        expires 1y;
+        etag off;
+        if_modified_since off;
+        add_header Cache-Control "public, no-transform";
+        root /opt/survev/client/dist;
+    }
+
+    location ~* \.(html)$ {
+        etag on;
+        add_header Cache-Control "no-cache";
+        root /opt/survev/client/dist;
+    }
+
     # Client build
     location / {
         root /opt/survev/client/dist;
@@ -138,6 +152,18 @@ server {
 
     # API server
     location /api {
+        proxy_http_version 1.1;
+
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Host $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host $http_host;
+
+        proxy_pass "http://127.0.0.1:8000";
+    }
+
+    location /private {
         proxy_http_version 1.1;
 
         proxy_set_header X-Real-IP $remote_addr;
@@ -236,3 +262,33 @@ sudo systemctl enable --now survev-api
 ```
 
 If you've done everything correctly, you should be able to access the server at `http://youriphere` (ex: `http://1.1.1.1`).
+
+### Bot setup (optional)
+
+Create a systemd unit file for the Bot
+
+```sh
+sudo nano /etc/systemd/system/survev-bot.service
+```
+
+populate it with
+
+```sh
+[Unit]
+Description=survev bot.
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/survev/bot
+ExecStart=/usr/bin/pnpm start
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Save and enable the unit:
+
+```sh
+sudo systemctl enable --now survev-bot
+```

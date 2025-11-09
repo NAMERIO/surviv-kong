@@ -115,6 +115,17 @@ async function setupDatabase(config: PartialConfig, initial = true) {
 
     if (dbEnabled.value) {
         await setupAccounts(config);
+
+        const setupBot = await prompt<{ value: boolean }>({
+            message: "Would you like to setup the moderation bot?",
+            name: "value",
+            type: "confirm",
+            initial: false,
+        });
+
+        if (setupBot.value) {
+            await setupBotConfig(config);
+        }
     }
 }
 
@@ -124,6 +135,7 @@ async function setupAccounts(config: PartialConfig) {
             "Enter the full base URL of the website for oauth2 redirects (eg: https://survev.io)",
         name: "value",
         type: "text",
+        initial: `http://${config.apiServer?.host ?? "127.0.0.1"}:${config.apiServer?.port ?? 8000}`,
         required: true,
     });
 
@@ -347,6 +359,41 @@ async function setupProductionConfig(config: PartialConfig) {
 
 async function setupDevelopmentConfig(config: PartialConfig) {
     await setupDatabase(config, false);
+}
+
+async function setupBotConfig(config: PartialConfig) {
+    config.secrets ??= {};
+
+    if (!config.secrets.DISCORD_CLIENT_ID) {
+        const clientId = await prompt<{ value: string }>({
+            message: "Enter discord client ID",
+            name: "value",
+            type: "text",
+            required: true,
+        });
+        config.secrets.DISCORD_CLIENT_ID = clientId.value;
+    }
+
+    const discordBotToken = await prompt<{ value: string }>({
+        message: "Enter the discord bot token",
+        name: "value",
+        type: "text",
+    });
+    config.secrets.DISCORD_BOT_TOKEN = discordBotToken.value;
+
+    const discordGuildId = await prompt<{ value: string }>({
+        message: "Enter the guild ID",
+        name: "value",
+        type: "text",
+    });
+    config.discordGuildId = discordGuildId.value;
+
+    const discordRoleId = await prompt<{ value: string }>({
+        message: "Enter the discord role ID",
+        name: "value",
+        type: "text",
+    });
+    config.discordRoleId = discordRoleId.value;
 }
 
 const configPath = path.join(import.meta.dirname, configFileName);

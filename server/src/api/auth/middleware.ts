@@ -2,11 +2,11 @@ import { zValidator } from "@hono/zod-validator";
 import type { Context, Next } from "hono";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import type { z } from "zod";
-import { validateSessionToken } from ".";
 import { Config } from "../../config";
-import { HTTPRateLimit, getHonoIp } from "../../utils/serverHelpers";
+import { getHonoIp, HTTPRateLimit } from "../../utils/serverHelpers";
 import { server } from "../apiServer";
-import { deleteSessionTokenCookie } from "../routes/user/auth/authUtils";
+import { cookieDomain, deleteSessionTokenCookie } from "../routes/user/auth/authUtils";
+import { validateSessionToken } from ".";
 
 export const authMiddleware = async (c: Context, next: Next) => {
     try {
@@ -30,6 +30,7 @@ export const authMiddleware = async (c: Context, next: Next) => {
                 sameSite: "lax",
                 path: "/",
                 expires: session.expiresAt,
+                domain: cookieDomain,
             });
         } else {
             deleteSessionTokenCookie(c);
@@ -40,7 +41,7 @@ export const authMiddleware = async (c: Context, next: Next) => {
         c.set("session", session);
         return next();
     } catch (err) {
-        server.logger.warn("Error trying to authenticate user", err);
+        server.logger.error("Error trying to authenticate user", err);
         return c.json({ error: "Authentication failed" }, 500);
     }
 };
@@ -85,7 +86,7 @@ export function rateLimitMiddleware(limit: number, interval: number) {
         const ip = getHonoIp(c, Config.apiServer.proxyIPHeader);
 
         if (!ip) {
-            return c.json({}, 500);
+            return c.json({ error: "invalid_ip" }, 500);
         }
 
         if (rateLimit.isRateLimited(ip)) {

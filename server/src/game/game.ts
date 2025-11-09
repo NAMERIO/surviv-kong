@@ -1,10 +1,13 @@
+import fs from "node:fs";
+import path from "node:path";
 import { TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
+import type { Loadout } from "../../../shared/utils/loadout";
 import { math } from "../../../shared/utils/math";
 import { v2 } from "../../../shared/utils/v2";
 import { Config } from "../config";
-import { Logger } from "../utils/logger";
-import { fetchApiServer } from "../utils/serverHelpers";
+import { ServerLogger } from "../utils/logger";
+import { apiPrivateRouter } from "../utils/serverHelpers";
 import {
     type FindGamePrivateBody,
     ProcessMsgType,
@@ -29,11 +32,13 @@ import { PlayerBarn } from "./objects/player";
 import { ProjectileBarn } from "./objects/projectile";
 import { SmokeBarn } from "./objects/smoke";
 import { PluginManager } from "./pluginManager";
+import { Profiler } from "./profiler";
 
 export interface JoinTokenData {
     expiresAt: number;
     userId: string | null;
     findGameIp: string;
+    loadout?: Loadout;
     groupData: {
         autoFill: boolean;
         playerCount: number;
@@ -44,9 +49,8 @@ export interface JoinTokenData {
 export class Game {
     started = false;
     stopped = false;
-    allowJoin = true;
+    allowJoin = false;
     over = false;
-    sentWinEMotes = false;
     startedTime = 0;
     stopTicker = 0;
     id: string;
@@ -56,6 +60,12 @@ export class Game {
     config: ServerGameConfig;
     pluginManager = new PluginManager(this);
     modeManager: GameModeManager;
+
+    tickTimeWarnThreshold = (1000 / Config.gameTps) * 4;
+    gameTickWarnings = 0;
+
+    netSyncWarnThreshold = (1000 / Config.netSyncTps) * 4;
+    netSyncWarnings = 0;
 
     grid: Grid<GameObject>;
     objectRegister: ObjectRegister;
@@ -97,20 +107,22 @@ export class Game {
     perfTicker = 0;
     tickTimes: number[] = [];
 
-    logger: Logger;
+    logger: ServerLogger;
 
     start = Date.now();
+
+    profiler = new Profiler();
 
     constructor(
         id: string,
         config: ServerGameConfig,
         readonly sendSocketMsg: (id: string, data: Uint8Array) => void,
-        readonly closeSocket: (id: string) => void,
+        readonly closeSocket: (id: string, reason?: string) => void,
         readonly sendData?: (data: UpdateDataMsg) => void,
     ) {
         this.id = id;
-        this.logger = new Logger(`Game #${this.id.substring(0, 4)}`);
-        this.logger.log("Creating");
+        this.logger = new ServerLogger(`Game #${this.id.substring(0, 4)}`);
+        this.logger.info("Creating");
 
         this.config = config;
 
@@ -149,19 +161,22 @@ export class Game {
 
     async init() {
         await this.pluginManager.loadPlugins();
-        this.pluginManager.emit("gameCreated", this);
         this.map.init();
+        this.pluginManager.emit("gameCreated", this);
 
         this.allowJoin = true;
-        this.logger.log(`Created in ${Date.now() - this.start} ms`);
+        this.logger.info(`Created in ${Date.now() - this.start} ms`);
 
         this.updateData();
     }
 
-    update(): void {
+    update(dt?: number): void {
+        if (!this.allowJoin) return;
+        this.profiler.flush();
+
         const now = performance.now();
         if (!this.now) this.now = now;
-        const dt = math.clamp((now - this.now) / 1000, 0.001, 1 / 8);
+        dt ??= math.clamp((now - this.now) / 1000, 0.001, 1 / 8);
 
         this.now = now;
 
@@ -185,33 +200,88 @@ export class Game {
         //
         // Update modules
         //
+        this.profiler.addSample("gas");
         this.gas.update(dt);
-        this.playerBarn.update(dt);
-        this.map.update(dt);
-        this.lootBarn.update(dt);
-        this.bulletBarn.update(dt);
-        this.projectileBarn.update(dt);
-        this.explosionBarn.update();
-        this.smokeBarn.update(dt);
-        this.airdropBarn.update(dt);
-        this.deadBodyBarn.update(dt);
-        this.decalBarn.update(dt);
-        this.planeBarn.update(dt);
+        this.profiler.endSample();
 
-        if (Config.perfLogging.enabled) {
-            // Record performance and start the next tick
-            // THIS TICK COUNTER IS WORKING CORRECTLY!
-            // It measures the time it takes to calculate a tick, not the time between ticks.
-            const tickTime = performance.now() - this.now;
+        this.profiler.addSample("players");
+        this.playerBarn.update(dt);
+        this.profiler.endSample();
+
+        this.profiler.addSample("map");
+        this.map.update(dt);
+        this.profiler.endSample();
+
+        this.profiler.addSample("loot");
+        this.lootBarn.update(dt);
+        this.profiler.endSample();
+
+        this.profiler.addSample("bullets");
+        this.bulletBarn.update(dt);
+        this.profiler.endSample();
+
+        this.profiler.addSample("projectiles");
+        this.projectileBarn.update(dt);
+        this.profiler.endSample();
+
+        this.profiler.addSample("explosions");
+        this.explosionBarn.update();
+        this.profiler.endSample();
+
+        this.profiler.addSample("smoke");
+        this.smokeBarn.update(dt);
+        this.profiler.endSample();
+
+        this.profiler.addSample("airdrops");
+        this.airdropBarn.update(dt);
+        this.profiler.endSample();
+
+        this.profiler.addSample("deadBodies");
+        this.deadBodyBarn.update(dt);
+        this.profiler.endSample();
+
+        this.profiler.addSample("decals");
+        this.decalBarn.update(dt);
+        this.profiler.endSample();
+
+        this.profiler.addSample("planes");
+        this.planeBarn.update(dt);
+        this.profiler.endSample();
+
+        const tickTime = performance.now() - this.now;
+
+        if (tickTime > 1000) {
+            let errString = `Tick took over 1 second! ${tickTime.toFixed(2)}ms\n`;
+            errString += "Profiler stats:\n";
+            errString += this.profiler.getStats();
+            this.logger.error(errString);
+        } else if (tickTime > this.tickTimeWarnThreshold) {
+            this.logger.warn(
+                `Tick took over ${this.tickTimeWarnThreshold}ms! ${tickTime.toFixed(2)}ms`,
+            );
+            this.gameTickWarnings++;
+
+            if (this.gameTickWarnings > 20) {
+                let errString = `Server is overloaded! Increasing tickTimeWarnThreshold.\n`;
+                errString += "Profiler stats:\n";
+                errString += this.profiler.getStats();
+                this.logger.warn(errString);
+
+                this.gameTickWarnings = 0;
+                this.tickTimeWarnThreshold *= 2;
+            }
+        }
+
+        if (Config.logging.debugLogs) {
             this.tickTimes.push(tickTime);
 
             this.perfTicker += dt;
-            if (this.perfTicker >= Config.perfLogging.time) {
+            if (this.perfTicker >= 15) {
                 this.perfTicker = 0;
                 const mspt =
                     this.tickTimes.reduce((a, b) => a + b) / this.tickTimes.length;
 
-                this.logger.log(
+                this.logger.debug(
                     `Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / (1000 / Config.gameTps)) * 100).toFixed(1)}%`,
                 );
                 this.tickTimes = [];
@@ -220,6 +290,10 @@ export class Game {
     }
 
     netSync() {
+        if (!this.allowJoin) return;
+
+        const start = performance.now();
+
         // serialize objects and send msgs
         this.objectRegister.serializeObjs();
         this.playerBarn.sendMsgs();
@@ -228,6 +302,7 @@ export class Game {
         // reset stuff
         //
         this.playerBarn.flush();
+        this.lootBarn.flush();
         this.planeBarn.flush();
         this.bulletBarn.flush();
         this.airdropBarn.flush();
@@ -237,6 +312,25 @@ export class Game {
         this.mapIndicatorBarn.flush();
 
         this.msgsToSend.stream.index = 0;
+
+        const syncTime = performance.now() - start;
+        if (syncTime > 1000) {
+            this.logger.error(`Tick took over 1 second! ${syncTime.toFixed(2)}ms`);
+        } else if (syncTime > this.netSyncWarnThreshold) {
+            this.logger.warn(
+                `Tick took over ${this.netSyncWarnThreshold}ms! ${syncTime.toFixed(2)}ms`,
+            );
+            this.netSyncWarnings++;
+
+            if (this.netSyncWarnings > 20) {
+                this.logger.warn(
+                    `Server is overloaded! Increasing netSyncWarnThreshold.`,
+                );
+
+                this.netSyncWarnings = 0;
+                this.netSyncWarnThreshold *= 2;
+            }
+        }
     }
 
     get canJoin(): boolean {
@@ -319,8 +413,7 @@ export class Game {
             msg = deserialized.msg;
             type = deserialized.type;
         } catch (err) {
-            this.logger.warn("Failed to deserialize msg: ");
-            console.error(err);
+            this.logger.error("Failed to deserialize msg: ", err);
             return;
         }
 
@@ -367,11 +460,11 @@ export class Game {
     handleSocketClose(socketId: string): void {
         const player = this.playerBarn.socketIdToPlayer.get(socketId);
         if (!player) return;
-        this.logger.log(`"${player.name}" left`);
+        this.logger.info(`"${player.name}" left`);
         player.disconnected = true;
         player.group?.checkPlayers();
         player.spectating = undefined;
-        player.dir = v2.create(0, 0);
+        player.dirNew = v2.create(1, 0);
         player.setPartDirty();
         if (player.canDespawn()) {
             player.game.playerBarn.removePlayer(player);
@@ -391,8 +484,8 @@ export class Game {
 
             // send win emoji after 1 second
             this.playerBarn.sendWinEmoteTicker = 1;
-            // stop game after 2
-            this.stopTicker = 2;
+            // stop game after 1.8s
+            this.stopTicker = 1.8;
 
             this.updateData();
         }
@@ -411,6 +504,7 @@ export class Game {
                 userId: token.userId,
                 groupData,
                 findGameIp: token.ip,
+                loadout: token.loadout,
             });
         }
     }
@@ -437,7 +531,7 @@ export class Game {
                 this.closeSocket(player.socketId);
             }
         }
-        this.logger.log("Game Ended");
+        this.logger.info("Game Ended");
         this.updateData();
         this._saveGameToDatabase();
     }
@@ -451,6 +545,15 @@ export class Game {
          */
         const teamTotal = new Set(players.map(({ player }) => player.teamId)).size;
 
+        const teamKills = players.reduce(
+            (acc, curr) => {
+                acc[curr.player.teamId] =
+                    (acc[curr.player.teamId] ?? 0) + curr.player.kills;
+                return acc;
+            },
+            {} as Record<string, number>,
+        );
+
         const values: SaveGameBody["matchData"] = players.map(({ player, rank }) => {
             return {
                 // *NOTE: userId is optional; we save the game stats for non logged users too
@@ -459,12 +562,13 @@ export class Game {
                 username: player.name,
                 playerId: player.matchDataId,
                 teamMode: this.teamMode,
-                teamCount: player.group?.totalCount ?? 1,
+                teamCount: player.group?.players.length ?? 1,
                 teamTotal: teamTotal,
                 teamId: player.teamId,
                 timeAlive: Math.round(player.timeAlive),
                 died: player.dead,
                 kills: player.kills,
+                team_kills: teamKills[player.groupId] ?? 0,
                 damageDealt: Math.round(player.damageDealt),
                 damageTaken: Math.round(player.damageTaken),
                 killerId: player.killedBy?.matchDataId || 0,
@@ -485,36 +589,45 @@ export class Game {
         // to avoid blocking the game from being GC'd until this request is done
         // and opening a database in each process if it fails
         // etc
-        const res = await fetchApiServer<SaveGameBody, { error: string }>(
-            "private/save_game",
-            {
-                matchData: values,
-            },
-        );
+        let res: Response | undefined = undefined;
+        try {
+            res = await apiPrivateRouter.save_game.$post({
+                json: {
+                    matchData: values,
+                },
+            });
+        } catch (err) {
+            this.logger.error(`Failed to fetch API save game:`, err);
+        }
 
-        if (!res || res.error) {
-            this.logger.warn(`Failed to save game data, saving locally instead`);
-
-            // we dump the game  to a local db if we failed to save;
-            // avoid importing sqlite and creating the database at process startup
-            // since this code should rarely run anyway
-            const sqliteDb = (await import("better-sqlite3")).default(
-                "lost_game_data.db",
+        if (!res || !res.ok) {
+            const region = Config.gameServer.thisRegion.toUpperCase();
+            this.logger.error(
+                `[${region}] Failed to save game data, saving locally instead`,
             );
 
-            sqliteDb
-                .prepare(`
-                    CREATE TABLE IF NOT EXISTS lost_game_data (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        data TEXT NOT NULL,
-                        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-                    )
-                `)
-                .run();
+            const dir = path.resolve("lost_game_data");
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir);
+            }
+            fs.writeFileSync(
+                path.join(dir, `${this.id}.json`),
+                JSON.stringify(values),
+                "utf8",
+            );
+        }
+    }
 
-            sqliteDb
-                .prepare("INSERT INTO lost_game_data (data) VALUES (?)")
-                .run(JSON.stringify(values));
+    /**
+     * Steps the game X seconds in the future
+     * This is done in smaller steps of 0.1 seconds
+     * To make sure everything updates properly
+     *
+     * Used for unit tests, don't call this on actual game code :p
+     */
+    step(seconds: number) {
+        for (let i = 0, steps = seconds * 10; i < steps; i++) {
+            this.update(0.1);
         }
     }
 }

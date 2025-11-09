@@ -1,4 +1,5 @@
-import { util } from "../../utils/util";
+import type { InventoryItem } from "../../gameConfig";
+import { type DeepPartial, util } from "../../utils/util";
 import { TeamColor } from "../maps/factionDefs";
 
 type BasicRoleWeapon = {
@@ -27,43 +28,13 @@ function getTeamHelmet(
     return colorToHelmetMap[teamcolor];
 }
 
-type DeepPartial<T> = T extends object
-    ? {
-          [P in keyof T]?: DeepPartial<T[P]>;
-      }
-    : T;
-
 type DefaultItems = {
     weapons: [RoleWeapon, RoleWeapon, RoleWeapon, RoleWeapon];
     backpack: string;
     helmet: string | ((teamcolor: TeamColor) => string);
     chest: string;
     outfit: string | ((teamcolor: TeamColor) => string);
-    inventory: {
-        "9mm": number;
-        "762mm": number;
-        "556mm": number;
-        "12gauge": number;
-        "50AE": number;
-        "308sub": number;
-        flare: number;
-        "45acp": number;
-        frag: number;
-        smoke: number;
-        strobe: number;
-        mirv: number;
-        snowball: number;
-        potato: number;
-        bandage: number;
-        healthkit: number;
-        soda: number;
-        painkiller: number;
-        "1xscope": number;
-        "2xscope": number;
-        "4xscope": number;
-        "8xscope": number;
-        "15xscope": number;
-    };
+    inventory: Partial<Record<InventoryItem, number>>;
 };
 
 export interface RoleDef {
@@ -81,7 +52,7 @@ export interface RoleDef {
 
     mapIcon?: {
         alive: string;
-        dead: string;
+        dead?: string;
     };
     defaultItems?: DefaultItems;
     perks?: (string | (() => string))[];
@@ -99,7 +70,7 @@ export interface RoleDef {
     color?: number;
 }
 
-function createDefaultItems<T extends DefaultItems>(e: DeepPartial<T>): T {
+function createDefaultItems(e: DeepPartial<DefaultItems>): DefaultItems {
     const defaultItems: DefaultItems = {
         weapons: [
             { type: "", ammo: 0 },
@@ -107,7 +78,7 @@ function createDefaultItems<T extends DefaultItems>(e: DeepPartial<T>): T {
             { type: "", ammo: 0 },
             { type: "", ammo: 0 },
         ],
-        backpack: "backpack00",
+        backpack: "",
         helmet: "",
         chest: "",
         outfit: "",
@@ -186,6 +157,40 @@ export const RoleDefs: Record<string, RoleDef> = {
                 })[teamcolor],
             inventory: {
                 "8xscope": 1,
+                bandage: 10,
+                healthkit: 1,
+            },
+        }),
+    },
+    captain: {
+        type: "role",
+        announce: true,
+        killFeed: { assign: true },
+        sound: { assign: "captain_assigned_01" },
+        mapIcon: {
+            alive: "player-captain.img",
+        },
+        perks: ["assume_leadership", "firepower"],
+        defaultItems: createDefaultItems({
+            weapons: [
+                { type: "", ammo: 0 },
+                { type: "", ammo: 0 },
+                { type: "", ammo: 0 },
+                { type: "", ammo: 0 },
+            ],
+            backpack: "backpack03",
+            helmet: "helmet04_captain",
+            chest: "chest03",
+            outfit: (teamcolor: TeamColor) =>
+                ({
+                    [TeamColor.Red]: "outfitRedLeader",
+                    [TeamColor.Blue]: "outfitBlueLeader",
+                })[teamcolor],
+            inventory: {
+                "8xscope": 1,
+                bandage: 10,
+                healthkit: 1,
+                soda: 2,
             },
         }),
     },
@@ -214,6 +219,9 @@ export const RoleDefs: Record<string, RoleDef> = {
             chest: "chest03",
             inventory: {
                 "4xscope": 1,
+                bandage: 10,
+                healthkit: 1,
+                soda: 2,
             },
         }),
     },
@@ -278,6 +286,7 @@ export const RoleDefs: Record<string, RoleDef> = {
             chest: "chest03",
             inventory: {
                 "8xscope": 1,
+                bandage: 5,
             },
         }),
     },
@@ -300,6 +309,7 @@ export const RoleDefs: Record<string, RoleDef> = {
             inventory: {
                 "4xscope": 1,
                 soda: 6,
+                bandage: 5,
             },
         }),
     },
@@ -312,7 +322,7 @@ export const RoleDefs: Record<string, RoleDef> = {
         defaultItems: createDefaultItems({
             weapons: [
                 { type: "", ammo: 0 },
-                { type: "mp220", ammo: 2, fillInv: true },
+                { type: "saiga", ammo: 5, fillInv: true },
                 { type: "katana", ammo: 0 },
                 { type: "mirv", ammo: 8 },
             ],
@@ -323,6 +333,7 @@ export const RoleDefs: Record<string, RoleDef> = {
                 mirv: 8,
                 frag: 12,
                 "4xscope": 1,
+                bandage: 5,
             },
         }),
     },
@@ -336,7 +347,7 @@ export const RoleDefs: Record<string, RoleDef> = {
             weapons: [
                 { type: "", ammo: 0 },
                 { type: "bugle", ammo: 1 },
-                { type: "", ammo: 0 },
+                { type: "pan", ammo: 0 },
                 { type: "", ammo: 0 },
             ],
             backpack: "backpack03",
@@ -344,6 +355,7 @@ export const RoleDefs: Record<string, RoleDef> = {
             chest: "chest03",
             inventory: {
                 "4xscope": 1,
+                bandage: 5,
             },
         }),
     },
@@ -354,10 +366,14 @@ export const RoleDefs: Record<string, RoleDef> = {
         sound: { assign: "last_man_assigned_01" },
         perks: [
             "steelskin",
-            "splinter",
             () =>
                 util.weightedRandom([
-                    { type: "takedown", weight: 4.5 },
+                    { type: "ap_rounds", weight: 1 },
+                    { type: "splinter", weight: 1 },
+                ]).type,
+            "takedown",
+            () =>
+                util.weightedRandom([
                     { type: "windwalk", weight: 1 },
                     { type: "field_medic", weight: 1 },
                 ]).type,
@@ -395,6 +411,9 @@ export const RoleDefs: Record<string, RoleDef> = {
             inventory: {
                 mirv: 8,
                 "8xscope": 1,
+                bandage: 10,
+                healthkit: 1,
+                soda: 2,
             },
         }),
     },
@@ -424,9 +443,9 @@ export const RoleDefs: Record<string, RoleDef> = {
         },
         mapIndicator: {
             sprite: "player-the-hunted.img",
-            tint: 16745472,
+            tint: 0xff8400,
             pulse: true,
-            pulseTint: 16745472,
+            pulseTint: 0xff8400,
         },
         perks: ["hunted"],
     },
@@ -446,7 +465,7 @@ export const RoleDefs: Record<string, RoleDef> = {
             spriteScale: 0.3,
         },
         guiImg: "img/gui/role-healer.svg",
-        color: 11468975,
+        color: 0xaf00af,
     },
     tank: {
         type: "role",
@@ -462,7 +481,7 @@ export const RoleDefs: Record<string, RoleDef> = {
             spriteScale: 0.3,
         },
         guiImg: "img/gui/role-tank.svg",
-        color: 13862400,
+        color: 0xd38600,
     },
     sniper: {
         type: "role",
@@ -480,7 +499,7 @@ export const RoleDefs: Record<string, RoleDef> = {
             spriteScale: 0.3,
         },
         guiImg: "img/gui/role-sniper.svg",
-        color: 30696,
+        color: 0x77e8,
     },
     scout: {
         type: "role",
@@ -498,7 +517,7 @@ export const RoleDefs: Record<string, RoleDef> = {
             spriteScale: 0.3,
         },
         guiImg: "img/gui/role-scout.svg",
-        color: 6725632,
+        color: 0x66a000,
     },
     demo: {
         type: "role",
@@ -514,7 +533,7 @@ export const RoleDefs: Record<string, RoleDef> = {
             spriteScale: 0.3,
         },
         guiImg: "img/gui/role-demo.svg",
-        color: 6750976,
+        color: 0x670300,
     },
     assault: {
         type: "role",
@@ -532,6 +551,6 @@ export const RoleDefs: Record<string, RoleDef> = {
             spriteScale: 0.3,
         },
         guiImg: "img/gui/role-assault.svg",
-        color: 16772119,
+        color: 0xffec17,
     },
 };

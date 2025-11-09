@@ -13,6 +13,7 @@ export type TeamMenuErrorType =
     | "find_game_error"
     | "find_game_full"
     | "find_game_invalid_protocol"
+    | "find_game_invalid_captcha"
     | "kicked"
     | "banned"
     | "behind_proxy"
@@ -27,6 +28,7 @@ export interface RoomData {
     enabledGameModeIdxs: number[];
     gameModeIdx: number;
     maxPlayers: number;
+    captchaEnabled: boolean;
 }
 
 //
@@ -157,6 +159,7 @@ export const zTeamPlayGameMsg = z.object({
         version: z.number(),
         region: z.string(),
         zones: z.array(z.string()),
+        turnstileToken: z.string().optional(),
     }),
 });
 

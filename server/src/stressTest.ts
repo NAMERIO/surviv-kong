@@ -7,8 +7,8 @@ import { GameConfig, type Input } from "../../shared/gameConfig";
 import * as net from "../../shared/net/net";
 import {
     type ObjectData,
-    ObjectType,
     type ObjectsPartialData,
+    ObjectType,
 } from "../../shared/net/objectSerializeFns";
 import type { LocalData } from "../../shared/net/updateMsg";
 import type {
@@ -18,10 +18,11 @@ import type {
 } from "../../shared/types/api";
 import { util } from "../../shared/utils/util";
 import { v2 } from "../../shared/utils/v2";
+import { Config } from "./config";
 
 const config = {
-    address: "http://127.0.0.1:8000",
-    region: "local",
+    address: Config.gameServer.apiServerUrl,
+    region: Config.gameServer.thisRegion,
     gameModeIdx: 0,
     botCount: 79,
     joinDelay: 100,
@@ -72,7 +73,7 @@ class ObjectCreator {
             const err = {
                 id,
                 ids: Object.keys(this.idToObj),
-                stream: s._view._view,
+                stream: s.view.view,
             };
             console.error("objectPoolErr", `getTypeById${JSON.stringify(err)}`);
             return ObjectType.Invalid;
@@ -188,6 +189,7 @@ class Bot {
                     break;
                 }
                 this.onMsg(type, stream.getStream());
+                stream.stream.readAlignToNextByte();
             }
         };
     }

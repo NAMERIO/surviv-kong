@@ -1,3 +1,4 @@
+import { styleText } from "util";
 import { type MapDef, MapDefs } from "../../../shared/defs/mapDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import type {
@@ -15,18 +16,17 @@ import { collider } from "../../../shared/utils/collider";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
 import type { River } from "../../../shared/utils/river";
-import { type MapRiverData, generateTerrain } from "../../../shared/utils/terrainGen";
+import { generateTerrain, type MapRiverData } from "../../../shared/utils/terrainGen";
 import { assert, util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { Config } from "../config";
 import type { Game } from "./game";
-import type { Group } from "./group";
+import type { Group, Team } from "./group";
 import { Building } from "./objects/building";
 import { Obstacle } from "./objects/obstacle";
 import type { Player } from "./objects/player";
 import { Structure } from "./objects/structure";
 import { RiverCreator } from "./riverCreator";
-import type { Team } from "./team";
 
 // most of this logic is based on the `renderMapBuildingBounds` from client debugHelpers
 // which was found on BHA leak
@@ -69,8 +69,8 @@ function getBuildingBounds(type: string, layer = 0, pos: Vec2, rot: number) {
         for (let i = 0; i < def.mapObjects.length; i++) {
             const mapObj = def.mapObjects[i];
             let mt = mapObj.type!;
-            if (typeof mt === "function") {
-                mt = mt();
+            if (typeof mt === "object") {
+                mt = util.weightedRandomObject(mt);
             }
 
             const childDef = MapObjectDefs[mt];
@@ -96,6 +96,7 @@ function getBuildingBounds(type: string, layer = 0, pos: Vec2, rot: number) {
 }
 
 interface GridCollider {
+    __gridQueryId?: number;
     collision: Collider;
     layer: number;
     // Obstacle colliders are used for areas obstacles and buildings cant spawn
@@ -118,6 +119,7 @@ export class MapGrid<T extends GridCollider = GridCollider> {
     //                        X     Y     Object
     //                      __^__ __^__   __^__
     private readonly _grid: Array<Array<Array<T>>>;
+    private nextQueryId = 1;
 
     constructor(width: number, height: number) {
         this.width = Math.floor(width / this.cellSize);
@@ -129,6 +131,7 @@ export class MapGrid<T extends GridCollider = GridCollider> {
     }
 
     addCollider(coll: T): void {
+        coll.__gridQueryId = 0;
         const aabb = collider.toAabb(coll.collision);
         // Get the bounds of the hitbox
         // Round it to the grid cells
@@ -145,28 +148,28 @@ export class MapGrid<T extends GridCollider = GridCollider> {
     }
 
     intersectCollider(coll: Collider): T[] {
-        return [...this.intersectColliderSet(coll)];
-    }
-
-    intersectColliderSet(coll: Collider): Set<T> {
         const aabb = collider.toAabb(coll);
 
         const min = this._roundToCells(aabb.min);
         const max = this._roundToCells(aabb.max);
 
-        const objects = new Set<T>();
+        const colliders: T[] = [];
+        const queryId = this.nextQueryId++;
 
         for (let x = min.x; x <= max.x; x++) {
             const xRow = this._grid[x];
             for (let y = min.y; y <= max.y; y++) {
                 const cell = xRow[y];
-                for (const object of cell) {
-                    objects.add(object);
+                for (let i = 0; i < cell.length; i++) {
+                    const coll = cell[i];
+                    if (coll.__gridQueryId === queryId) continue;
+                    coll.__gridQueryId = queryId;
+                    colliders.push(coll);
                 }
             }
         }
 
-        return objects;
+        return colliders;
     }
 
     private _roundToCells(vector: Vec2): Vec2 {
@@ -257,6 +260,20 @@ export class GameMap {
         staggerCount: number;
     }> = [];
 
+    loggingTimes: number[] = [];
+
+    timerStart() {
+        this.loggingTimes.push(performance.now());
+    }
+
+    timerEnd(msg: string) {
+        const now = performance.now();
+        const old = this.loggingTimes.pop();
+
+        const time = `${Math.round(now - old!)}ms`.padEnd(6);
+        this.game.logger.debug(styleText(["green"], time), msg);
+    }
+
     constructor(game: Game) {
         this.game = game;
 
@@ -327,25 +344,25 @@ export class GameMap {
         this.placeSpawns = [...this.mapDef.mapGen.customSpawnRules.placeSpawns];
         this.msg.places = [...this.mapDef.mapGen.places];
 
-        this.placesToSpawn = this.mapDef.mapGen.places.map((place) => {
-            return v2.create(
-                place.pos.x * this.width,
-                // places Y axis is inverted lol
-                Math.abs(place.pos.y - 1) * this.height,
-            );
-        });
+        this.placesToSpawn = this.mapDef.mapGen.places
+            .filter((p) => !p.dontSpawnObjects)
+            .map((place) => {
+                return v2.create(
+                    place.pos.x * this.width,
+                    // places Y axis is inverted lol
+                    Math.abs(place.pos.y - 1) * this.height,
+                );
+            });
 
-        this.riverMasks = this.mapDef.mapGen.map.rivers.masks.map((mask) => {
-            return {
-                pos: v2.create(mask.pos.x * this.width, mask.pos.y * this.height),
-                rad: mask.rad,
-            };
-        });
+        this.riverMasks = [];
+
+        this.generateRiverMasks();
 
         if (this.factionMode) {
             this.factionModeSplitOri = util.randomInt(0, 1) as 0 | 1;
         }
 
+        this.timerStart();
         this.generateTerrain();
 
         this.msg.rivers = this.riverDescs;
@@ -358,11 +375,13 @@ export class GameMap {
             this.riverDescs,
             this.seed,
         );
+        this.timerEnd("Generating terrain");
 
         this.normalRivers = [];
         this.lakes = [];
         this.riverAreas = new Map();
 
+        this.timerStart();
         this.shoreArea = math.polygonArea(this.terrain.shore);
         this.grassArea = math.polygonArea(this.terrain.grass);
 
@@ -383,8 +402,11 @@ export class GameMap {
                 water: waterArea,
             });
         }
+        this.timerEnd("Calculating map areas");
 
+        this.timerStart();
         this.generateObjects();
+        this.timerEnd("Generating all objects");
 
         this.mapStream.stream.index = 0;
         this.mapStream.serializeMsg(MsgType.Map, this.msg);
@@ -500,9 +522,9 @@ export class GameMap {
                     continue;
                 }
 
-                //building
+                // building
                 const unlockables = unlockObject.childObjects.filter(
-                    (o) => o instanceof Obstacle && o.door && o.door.locked,
+                    (o) => o.__type === ObjectType.Obstacle && o.door && o.door.locked,
                 ) as Obstacle[];
                 this.unlocks.push({
                     unlockables: unlockables,
@@ -531,7 +553,10 @@ export class GameMap {
         }
     }
 
-    randomPointOnMapEdge(randomGenerator?: (min?: number, max?: number) => number): Vec2 {
+    randomPointOnMapEdge(
+        randomGenerator?: (min?: number, max?: number) => number,
+        offset = 0,
+    ): Vec2 {
         if (!randomGenerator) {
             randomGenerator = (min = 0, max = 1) => util.random(min, max);
         }
@@ -539,14 +564,72 @@ export class GameMap {
         const side = Math.floor(randomGenerator(0, 4)) as 0 | 1 | 2 | 3;
         switch (side) {
             case 0:
-                return v2.create(this.width, randomGenerator(0, this.height));
+                return v2.create(
+                    this.width - offset,
+                    randomGenerator(offset, this.height - offset),
+                );
             case 1:
-                return v2.create(randomGenerator(0, this.width), this.height);
+                return v2.create(
+                    randomGenerator(offset, this.width - offset),
+                    this.height - offset,
+                );
             case 2:
-                return v2.create(0, randomGenerator(0, this.height));
+                return v2.create(offset, randomGenerator(offset, this.height - offset));
             case 3:
-                return v2.create(randomGenerator(0, this.width), 0);
+                return v2.create(randomGenerator(offset, this.width - offset), offset);
         }
+    }
+
+    generateRiverMasks() {
+        if (!this.mapDef.mapGen.map.rivers.masks.length) return;
+
+        this.timerStart();
+
+        const rand = util.seededRand(this.seed);
+
+        for (const mask of this.mapDef.mapGen.map.rivers.masks) {
+            if (mask.pos) {
+                this.riverMasks.push({
+                    pos: v2.create(mask.pos.x * this.width, mask.pos.y * this.height),
+                    rad: mask.rad,
+                });
+            } else {
+                const spawnMin = v2.create(
+                    this.shoreInset + mask.rad,
+                    this.shoreInset + mask.rad,
+                );
+                const spawnMax = v2.create(
+                    this.width - this.shoreInset - mask.rad,
+                    this.height - this.shoreInset - mask.rad,
+                );
+
+                this.trySpawn("river_mask", () => {
+                    let pos = v2.create(
+                        rand(spawnMin.x, spawnMax.x),
+                        rand(spawnMin.y, spawnMax.y),
+                    );
+                    if (mask.genOnShore) {
+                        pos = this.randomPointOnMapEdge(rand, mask.rad);
+                    }
+
+                    for (const mask2 of this.riverMasks) {
+                        if (
+                            coldet.testCircleCircle(pos, mask.rad, mask2.pos, mask2.rad)
+                        ) {
+                            return false;
+                        }
+                    }
+
+                    this.riverMasks.push({
+                        pos,
+                        rad: mask.rad,
+                    });
+
+                    return true;
+                });
+            }
+        }
+        this.timerEnd("Generating river masks");
     }
 
     generateTerrain(): void {
@@ -573,7 +656,7 @@ export class GameMap {
         ).widths;
 
         for (let i = 0; i < widths.length; i++) {
-            //in factions mode, we always assume the first width in widths is the main faction river
+            // in factions mode, we always assume the first width in widths is the main faction river
             const isFactionRiver = this.factionMode;
 
             this.trySpawn(`river_${widths[i]}`, () => {
@@ -590,23 +673,48 @@ export class GameMap {
         }
     }
 
-    /** only called inside generateObjects, separates logic into function to simplify control flow */
-    private generateBridges(mapDef: MapDef): void {
-        //factions mode always had one extra large bridge on each side of the river town's extra large bridge.
-        if (this.factionMode) {
-            this.genBridge(
-                mapDef.mapGen.bridgeTypes.xlarge,
-                this.terrain.rivers[0],
-                0.25,
-            );
-            this.genBridge(
-                mapDef.mapGen.bridgeTypes.xlarge,
-                this.terrain.rivers[0],
-                0.75,
-            );
-        }
+    private generateFactionBridges() {
+        const mapDef = this.mapDef;
 
-        //generate 0-3 bridges on random rivers for normal modes
+        const bridges = [
+            "river_town_01",
+            mapDef.mapGen.bridgeTypes.xlarge,
+            mapDef.mapGen.bridgeTypes.xlarge,
+        ];
+
+        // min and max T of the river the bridges can spawn
+        const riverTs: [number, number][] = [
+            [0.45, 0.55], // main bridge
+            [0.2, 0.3], // side ones
+            [0.7, 0.85],
+        ];
+
+        for (let i = 0; i < bridges.length; i++) {
+            inner: for (let j = 0; j < riverTs.length; j++) {
+                const bridgeType = bridges[i];
+                const riverT = riverTs[j];
+
+                const generated = this.genBridge(
+                    bridgeType,
+                    this.terrain.rivers[0],
+                    riverT,
+                );
+
+                if (generated) {
+                    riverTs.splice(j, 1);
+                    j--;
+                    break inner;
+                }
+                // if we couldn't spawn it, continue the loop trying other spawn positions
+                // this will make the main town bridge spawn on the sides
+                // if it fails to spawn on the center
+            }
+        }
+    }
+
+    /** only called inside generateObjects, separates logic into function to simplify control flow */
+    private generateBridges(): void {
+        const mapDef = this.mapDef;
 
         type BridgeSize = "medium" | "large" | "xlarge";
         function getBridgeSize(river: River): BridgeSize | null {
@@ -622,7 +730,7 @@ export class GameMap {
             return "xlarge";
         }
 
-        //maximum amount of a specific bridge that can spawn
+        // maximum amount of a specific bridge that can spawn
         const maxBridges: Record<BridgeSize, number> = {
             medium: 3,
             large: 2,
@@ -644,7 +752,7 @@ export class GameMap {
                 maxBridges[bridgeSize] * (river.spline.points.length / 33),
             );
             for (let i = 0; i < max; i++) {
-                this.genBridge(bridgeType, river);
+                this.genBridge(bridgeType, river, undefined, false);
             }
         }
     }
@@ -652,6 +760,7 @@ export class GameMap {
     generateObjects(): void {
         const mapDef = this.mapDef;
 
+        this.timerStart();
         for (const customSpawnRule of mapDef.mapGen.customSpawnRules.locationSpawns) {
             const center = v2.create(
                 customSpawnRule.pos.x * this.width,
@@ -663,14 +772,30 @@ export class GameMap {
                 const pos = v2.add(util.randomPointInCircle(customSpawnRule.rad), center);
 
                 if (!this.canSpawn(customSpawnRule.type, pos, ori)) return false;
-                this.genAuto(customSpawnRule.type, pos);
+                this.genAuto(customSpawnRule.type, pos, 0, ori);
                 return true;
             });
         }
+        this.timerEnd("Generating custom spawn rules");
 
         // @NOTE: see comment on defs/maps/baseDefs.ts about single item arrays
-        const fixedSpawns = mapDef.mapGen.fixedSpawns[0];
+        const fixedSpawns = { ...mapDef.mapGen.fixedSpawns[0] };
         const importantSpawns = mapDef.mapGen.importantSpawns;
+
+        for (const randomSpawns of mapDef.mapGen.randomSpawns) {
+            const spawns = [...randomSpawns.spawns];
+            for (let i = 0; i < randomSpawns.choose; i++) {
+                const idx = util.randomInt(0, spawns.length - 1);
+                const spawn = spawns.splice(idx, 1)[0];
+
+                if (typeof fixedSpawns[spawn] === "number") {
+                    fixedSpawns[spawn]++;
+                } else {
+                    fixedSpawns[spawn] = 1;
+                }
+            }
+        }
+
         const types = Object.keys(fixedSpawns)
             .sort((a, b) => {
                 const boundsA = collider.toAabb(mapHelpers.getBoundingCollider(a));
@@ -687,17 +812,11 @@ export class GameMap {
                 return sizeB - sizeA;
             })
             .sort((a, b) => {
-                const includesA = importantSpawns.includes(a);
-                const includesB = importantSpawns.includes(b);
-
-                if (includesA == includesB) return 0;
-                if (includesA) return -1;
-                if (includesB) return 1;
-
-                return 0;
+                return importantSpawns.indexOf(b) - importantSpawns.indexOf(a);
             });
 
-        //buildings that contain bridges such as ocean/river shacks and river town
+        this.timerStart();
+        // buildings that contain bridges such as ocean/river shacks and river town
         const bridgeTypes = [];
         for (let i = 0; i < types.length; i++) {
             const type = types[i];
@@ -723,19 +842,28 @@ export class GameMap {
                 this.genFromMapDef(type, count);
             }
         }
+        this.timerEnd("Generating map def bridges");
 
         if (this.riverDescs.length) {
             //
             // Generate bridges
             //
 
-            this.generateBridges(mapDef);
+            if (this.factionMode) {
+                this.timerStart();
+                this.generateFactionBridges();
+                this.timerEnd("Generating faction bridges");
+            }
+
+            this.timerStart();
+            this.generateBridges();
+            this.timerEnd("Generating random bridges");
 
             //
             // Generate river cabins
             //
-
             if (this.mapDef.mapGen.map.rivers.spawnCabins) {
+                this.timerStart();
                 let cabinsToSpawn = 1;
                 for (let i = 0; i < this.normalRivers.length; i++) {
                     const river = this.normalRivers[i];
@@ -750,11 +878,13 @@ export class GameMap {
                 for (let i = 0; i < cabinsToSpawn; i++) {
                     this.genRiverCabin();
                 }
+                this.timerEnd("Generating river cabins");
             }
 
             //
             // Generate river rocks and bushes
             //
+            this.timerStart();
             const riverObjs: Record<string, number> = {
                 stone_03: 0.9,
                 bush_04: 0.4,
@@ -770,8 +900,10 @@ export class GameMap {
                     }
                 }
             }
+            this.timerEnd("Generating river obstacles");
         }
 
+        this.timerStart();
         for (let i = 0; i < types.length; i++) {
             const type = types[i];
             let count = fixedSpawns[type];
@@ -786,21 +918,14 @@ export class GameMap {
                 this.genFromMapDef(type, count);
             }
         }
+        this.timerEnd("Generating fixed spawns");
 
-        const randomSpawns = mapDef.mapGen.randomSpawns[0];
-        if (randomSpawns) {
-            const spawns = [...randomSpawns.spawns];
-            for (let i = 0; i < randomSpawns.choose; i++) {
-                const idx = util.randomInt(0, spawns.length - 1);
-                const spawn = spawns.splice(idx, 1)[0];
-                this.genFromMapDef(spawn, 1);
-            }
-        }
-
+        this.timerStart();
         const densitySpawns = mapDef.mapGen.densitySpawns[0];
         for (const type in densitySpawns) {
             this.genDensitySpawn(type, densitySpawns[type]);
         }
+        this.timerEnd("Generating density spawns");
     }
 
     genDensitySpawn(type: string, density: number) {
@@ -866,7 +991,7 @@ export class GameMap {
         const def = MapObjectDefs[type];
 
         if (!def) {
-            this.game.logger.warn("Type does not exist!", type);
+            this.game.logger.warn("Invalid map object:", type);
             return;
         }
 
@@ -907,6 +1032,9 @@ export class GameMap {
                             item.count,
                             undefined,
                             0,
+                            undefined,
+                            item.preload === true,
+                            "map",
                         );
                     }
                     this.grid.addCollider({
@@ -930,9 +1058,10 @@ export class GameMap {
     trySpawn(
         type: string,
         cb: () => boolean,
-        maxAttempts = 500,
+        maxAttempts?: number,
         logOnFailure = true,
     ): boolean {
+        maxAttempts ??= this.mapDef.mapGen.importantSpawns.includes(type) ? 5000 : 500;
         let attempts = 0;
         while (attempts < maxAttempts) {
             if (cb()) {
@@ -966,10 +1095,11 @@ export class GameMap {
             }
         }
 
-        if (def.type == "building" || def.type === "structure") {
-            const colliders = getBuildingBounds(type, 0, pos, rot);
-            for (let i = 0; i < colliders.length; i++) {
-                const coll = colliders[i];
+        let buildingBounds: ReturnType<typeof getBuildingBounds> | undefined = undefined;
+        if (def.type === "building" || def.type === "structure") {
+            buildingBounds = getBuildingBounds(type, 0, pos, rot);
+            for (let i = 0; i < buildingBounds.length; i++) {
+                const coll = buildingBounds[i];
                 const gridColls = this.grid.intersectCollider(coll.collision);
 
                 for (let j = 0; j < gridColls.length; j++) {
@@ -1031,13 +1161,8 @@ export class GameMap {
                         1,
                     ) as AABB;
 
-                    // check all 4 corners of the AABB
-                    const points = collider.getPoints(bound);
-
-                    for (let j = 0; j < points.length; j++) {
-                        if (this.isOnWater(points[j], 0)) {
-                            return false;
-                        }
+                    if (this.isAabbOnWater(bound)) {
+                        return false;
                     }
                 }
             }
@@ -1052,8 +1177,14 @@ export class GameMap {
                         1,
                     ) as AABB;
 
-                    // check all 4 corners of the AABB
+                    // check all 4 corners + center of the AABB
                     const points = collider.getPoints(bound);
+                    points.push(
+                        v2.create(
+                            bound.min.x + (bound.max.x - bound.min.x) / 2,
+                            bound.min.y + (bound.max.y - bound.min.y) / 2,
+                        ),
+                    );
 
                     for (let j = 0; j < points.length; j++) {
                         if (!this.isOnWater(points[j], 0)) return false;
@@ -1063,33 +1194,34 @@ export class GameMap {
         }
 
         if (!def.terrain?.river && !def.terrain?.bridge) {
-            const boundCollider = collider.transform(
-                mapHelpers.getBoundingCollider(type),
-                pos,
-                rot,
-                scale,
-            );
+            let bounds = buildingBounds;
+            if (!bounds) {
+                bounds = [
+                    {
+                        layer: 0,
+                        collision: collider.transform(
+                            mapHelpers.getBoundingCollider(type),
+                            pos,
+                            rot,
+                            scale,
+                        ),
+                    },
+                ];
+            }
 
-            const aabb = collider.toAabb(boundCollider);
-            for (let i = 0; i < this.terrain.rivers.length; i++) {
-                const river = this.terrain.rivers[i];
+            for (let i = 0; i < bounds.length; i++) {
+                const bound = bounds[i];
+                if (bound.layer !== 0) continue;
+                const aabb = collider.toAabb(bound.collision);
 
-                if (!coldet.test(boundCollider, river.aabb)) continue;
-
-                if (
-                    !def.terrain?.riverShore &&
-                    (math.pointInsidePolygon(pos, river.shorePoly) ||
-                        coldet.testAabbPolygon(aabb.min, aabb.max, river.shorePoly))
-                ) {
-                    return false;
-                }
-
-                if (math.pointInsidePolygon(pos, river.waterPoly)) {
-                    return false;
-                }
-
-                if (coldet.testAabbPolygon(aabb.min, aabb.max, river.waterPoly)) {
-                    return false;
+                if (def.terrain?.riverShore) {
+                    if (this.isAabbOnRiverWater(aabb)) {
+                        return false;
+                    }
+                } else {
+                    if (this.isAabbOnRiverShore(aabb)) {
+                        return false;
+                    }
                 }
             }
         }
@@ -1132,11 +1264,7 @@ export class GameMap {
             if ("oris" in def) {
                 ori = def.oris![util.randomInt(0, def.oris!.length - 1)];
             } else {
-                if (this.factionMode && type == "river_town_01") {
-                    ori = this.factionModeSplitOri;
-                } else {
-                    ori = def.ori ?? util.randomInt(0, 3);
-                }
+                ori = def.ori ?? util.randomInt(0, 3);
             }
         } else if (def.type === "obstacle") {
             scale = util.random(def.scale.createMin, def.scale.createMax);
@@ -1209,28 +1337,35 @@ export class GameMap {
 
     genOnGrass(type: string) {
         const bounds = collider.toAabb(mapHelpers.getBoundingCollider(type));
-
-        let width = bounds.max.x - bounds.min.x;
-        let height = bounds.max.y - bounds.min.y;
-
         const def = MapObjectDefs[type];
-        if (!def.terrain?.beach) {
-            width += this.grassInset;
-            height += this.grassInset;
-        }
 
-        let getPos = () => {
-            const spawnMin = v2.create(this.shoreInset + width, this.shoreInset + height);
-            const spawnMax = v2.create(
-                this.width - this.shoreInset - width,
-                this.height - this.shoreInset - height,
+        const getSpawnAabb = (ori: number, scale: number) => {
+            const rot = math.oriToRad(ori);
+            const bound = collider.transform(bounds, v2.create(0, 0), rot, scale) as AABB;
+
+            let width = bound.max.x - bound.min.x;
+            let height = bound.max.y - bound.min.y;
+            if (!def.terrain?.beach) {
+                width += this.grassInset;
+                height += this.grassInset;
+            }
+            const dims = v2.create(width, height);
+
+            const mapAabb = collider.createAabb(
+                v2.create(this.shoreInset, this.shoreInset),
+                v2.create(this.width - this.shoreInset, this.height - this.shoreInset),
             );
 
-            const spawnAabb = collider.createAabb(spawnMin, spawnMax);
+            mapAabb.min = v2.add(mapAabb.min, dims);
+            mapAabb.max = v2.sub(mapAabb.max, dims);
 
+            return mapAabb;
+        };
+
+        let getPos = (spawnAabb: AABB) => {
             if (this.factionMode) {
-                //obstacles, buildings, and structures that need to spawn on either team's side
-                //doesn't matter which team, just as long as theyre grouped with the team specific buildings
+                // obstacles, buildings, and structures that need to spawn on either team's side
+                // doesn't matter which team, just as long as theyre grouped with the team specific buildings
                 const edgeObjects = [
                     "warehouse_01f",
                     "house_red_01",
@@ -1238,24 +1373,24 @@ export class GameMap {
                     "barn_01",
                 ];
 
-                //obstacles, buildings, and structures that need to spawn away from the sides and closer to the center river
+                // obstacles, buildings, and structures that need to spawn away from the sides and closer to the center river
                 const centerObjects = [
                     "greenhouse_01",
-                    "bunker_structure_03", //storm bunker
+                    "bunker_structure_03", // storm bunker
                 ];
 
                 const divisions = 10;
                 let divisionIdx: number;
                 if ("teamId" in def && def.teamId) {
                     const teamId = def.teamId;
-                    //picks either of the furthest divisions from the center
+                    // picks either of the furthest divisions from the center
                     divisionIdx = (teamId - 1) * (divisions - 1);
                 } else if (edgeObjects.includes(type)) {
                     const teamId = util.randomInt(1, 2);
-                    //picks either of the furthest divisions from the center
+                    // picks either of the furthest divisions from the center
                     divisionIdx = (teamId - 1) * (divisions - 1);
                 } else if (centerObjects.includes(type)) {
-                    //picks any "non-furthest" division
+                    // picks any "non-furthest" division
                     divisionIdx = util.randomInt(1, divisions - 2);
                 } else {
                     return util.randomPointInAabb(spawnAabb);
@@ -1281,6 +1416,17 @@ export class GameMap {
                     const placeIdx = Math.floor(Math.random() * this.placeSpawns.length);
                     const place = this.placesToSpawn[placeIdx];
 
+                    const { ori, scale } = this.getOriAndScale(type);
+                    const rot = math.oriToRad(ori);
+                    const bound = collider.transform(
+                        bounds,
+                        v2.create(0, 0),
+                        rot,
+                        scale,
+                    ) as AABB;
+
+                    const width = bound.max.x - bound.min.x;
+                    const height = bound.max.y - bound.min.y;
                     const placePos = v2.add(
                         place,
                         v2.mulElems(
@@ -1297,7 +1443,6 @@ export class GameMap {
                             this.height - this.shoreInset - height,
                         ),
                     );
-                    const { ori, scale } = this.getOriAndScale(type);
 
                     if (!this.canSpawn(type, pos, ori, scale)) return false;
                     this.genAuto(type, pos, 0, ori, scale);
@@ -1320,7 +1465,8 @@ export class GameMap {
 
         this.trySpawn(type, () => {
             const { ori, scale } = this.getOriAndScale(type);
-            const pos = getPos();
+            const spawnAabb = getSpawnAabb(ori, scale);
+            const pos = getPos(spawnAabb);
 
             if (!this.canSpawn(type, pos, ori, scale)) return false;
             this.genAuto(type, pos, 0, ori, scale);
@@ -1364,7 +1510,12 @@ export class GameMap {
      *
      * 0 would be at the start, 1 would be at the end, 0.5 would be in the middle, etc
      */
-    genBridge(type: string, river?: River, progress?: number) {
+    genBridge(
+        type: string,
+        river?: River,
+        progress?: [number, number],
+        logOnFailure = true,
+    ): boolean {
         if (this.normalRivers.length == 0) {
             return false;
         }
@@ -1385,13 +1536,9 @@ export class GameMap {
 
             let t: number;
             if (progress) {
-                //hack until i can find a better solution
-                //sometimes the position exactly at "progress" is invalid so "canSpawn()" will always fail
-                //we avoid this by adding a tiny bit of random variation to the position so it'll eventually find a valid one
-                t = util.random(progress - 0.08, progress + 0.08);
-                t = math.clamp(t, 0, 1);
-            } else if (type == "river_town_01") {
-                t = util.random(0.45, 0.55); //0.5 is middle, just need to vary it a little
+                // sometimes the position exactly at "progress" is invalid so "canSpawn()" will always fail
+                // we avoid this by adding a tiny bit of random variation to the position so it'll eventually find a valid one
+                t = math.clamp(util.random(progress[0], progress[1]), 0, 1);
             } else {
                 t = util.random(0, 1);
             }
@@ -1428,28 +1575,33 @@ export class GameMap {
                 ori %= 2;
             }
             if (type == "river_town_01") {
-                //we flip the orientation because river town has red on left and blue on right by default
-                //the faction mode ori that gets us a left/right split vs top/bottom split is 1
-                //so of course we need to flip this value and vice versa for the other case
+                // we flip the orientation because river town has red on left and blue on right by default
+                // the faction mode ori that gets us a left/right split vs top/bottom split is 1
+                // so of course we need to flip this value and vice versa for the other case
                 ori = this.factionModeSplitOri ^ 1;
             }
 
             return { pos, ori };
         };
 
-        this.trySpawn(type, () => {
-            const { pos, ori } = getPosAndOri();
+        return this.trySpawn(
+            type,
+            () => {
+                const { pos, ori } = getPosAndOri();
 
-            if (!this.canSpawn(type, pos, ori, scale)) {
-                return false;
-            }
+                if (!this.canSpawn(type, pos, ori, scale)) {
+                    return false;
+                }
 
-            const obj = this.genAuto(type, pos, 0, ori, scale);
-            if (obj?.__type === ObjectType.Structure) {
-                this.bridges.push(obj);
-            }
-            return true;
-        });
+                const obj = this.genAuto(type, pos, 0, ori, scale);
+                if (obj?.__type === ObjectType.Structure) {
+                    this.bridges.push(obj);
+                }
+                return true;
+            },
+            undefined,
+            logOnFailure,
+        );
     }
 
     genOnRiver(type: string, river?: River) {
@@ -1674,7 +1826,9 @@ export class GameMap {
     ): Building {
         const def = MapObjectDefs[type] as BuildingDef;
 
-        ori = ori ?? def.ori ?? util.randomInt(0, 3);
+        if (ori === undefined) {
+            ori = this.getOriAndScale(type).ori;
+        }
 
         const building = new Building(this.game, type, pos, ori, layer, parentId);
 
@@ -1700,8 +1854,8 @@ export class GameMap {
         for (const mapObject of def.mapObjects ?? []) {
             let partType = mapObject.type;
 
-            if (typeof partType !== "string") {
-                partType = partType?.();
+            if (typeof partType === "object") {
+                partType = util.weightedRandomObject(partType);
             }
             if (!partType) continue;
 
@@ -1868,7 +2022,7 @@ export class GameMap {
 
         let getPos: () => Vec2;
 
-        if (!group?.spawnLeader) {
+        if (!group?.spawnPosition) {
             const spawnMin = v2.create(this.shoreInset, this.shoreInset);
             const spawnMax = v2.create(
                 this.width - this.shoreInset,
@@ -1882,9 +2036,9 @@ export class GameMap {
             if (this.factionMode && team) {
                 const rad = math.oriToRad(this.factionModeSplitOri ^ 1);
                 const vec = v2.create(Math.cos(rad), Math.sin(rad));
-                const idx = team.teamId - 1;
+                const idx = team.id - 1;
 
-                //farthest fifth from the center of the team's half. 1/5 * 1/2 = 1/10 hence the 10 divisions
+                // farthest fifth from the center of the team's half. 1/5 * 1/2 = 1/10 hence the 10 divisions
                 const divisions = 10;
                 spawnAabb = coldet.divideAabb(spawnAabb, vec, divisions)[
                     idx * (divisions - 1)
@@ -1896,78 +2050,102 @@ export class GameMap {
             };
         } else {
             const rad = GameConfig.player.teammateSpawnRadius;
-            const pos = group.spawnLeader.pos;
+            const pos = group.spawnPosition;
             getPos = () => {
                 return v2.add(pos, util.randomPointInCircle(rad));
             };
         }
-        return this.getRandomSpawnPos(getPos);
+        return this.getRandomSpawnPos(getPos, group, team);
     }
 
     getRandomSpawnPos(getPos: () => Vec2, group?: Group, team?: Team): Vec2 {
-        let attempts = 0;
-        let collided = true;
+        let pos = getPos();
 
-        const circle = collider.createCircle(getPos(), GameConfig.player.radius);
+        this.trySpawn(
+            "player",
+            () => {
+                v2.set(pos, getPos());
 
-        while (attempts++ < 500 && collided) {
-            collided = false;
-            v2.set(circle.pos, getPos());
-
-            if (this.isOnWater(circle.pos, 0)) {
-                collided = true;
-                continue;
-            }
-
-            const objs = this.grid.intersectCollider(circle);
-
-            for (let i = 0; i < objs.length; i++) {
-                const obj = objs[i];
-                if (obj.layer !== 0) continue;
-                if (obj.type !== "obstacle") continue;
-                if (coldet.test(circle, obj.collision)) {
-                    collided = true;
-                    break;
+                if (!this.canPlayerSpawn(pos)) {
+                    return false;
                 }
-            }
 
-            for (let i = 0; i < this.game.playerBarn.livingPlayers.length; i++) {
-                const player = this.game.playerBarn.livingPlayers[i];
-                if (group && player.groupId === group.groupId) continue;
-                if (team && player.teamId === team.teamId) continue;
+                for (let i = 0; i < this.game.playerBarn.livingPlayers.length; i++) {
+                    const player = this.game.playerBarn.livingPlayers[i];
+                    if (group && player.groupId === group.id) continue;
+                    if (team && player.teamId === team.id) continue;
 
-                if (v2.distance(player.pos, circle.pos) < GameConfig.player.minSpawnRad) {
-                    collided = true;
-                    break;
+                    if (v2.distance(player.pos, pos) < GameConfig.player.minSpawnRad) {
+                        return false;
+                    }
                 }
-            }
 
-            // prevent players from spawning bellow airdrops or grenades
+                // prevent players from spawning bellow airdrops or grenades
 
-            for (let i = 0; i < this.game.airdropBarn.airdrops.length; i++) {
-                const airdrop = this.game.airdropBarn.airdrops[i];
-                if (v2.distance(airdrop.pos, circle.pos) < 8) {
-                    collided = true;
-                    break;
+                for (let i = 0; i < this.game.airdropBarn.airdrops.length; i++) {
+                    const airdrop = this.game.airdropBarn.airdrops[i];
+                    if (v2.distance(airdrop.pos, pos) < 8) {
+                        return false;
+                    }
                 }
-            }
 
-            for (let i = 0; i < this.game.projectileBarn.projectiles.length; i++) {
-                const projectile = this.game.projectileBarn.projectiles[i];
-                if (projectile.layer !== 0) continue;
-                const player = this.game.objectRegister.getById(projectile.playerId);
-                if (player?.__type !== ObjectType.Player) continue;
-                if (group && player.groupId === group.groupId) continue;
-                if (team && player.teamId === team.teamId) continue;
+                for (let i = 0; i < this.game.projectileBarn.projectiles.length; i++) {
+                    const projectile = this.game.projectileBarn.projectiles[i];
+                    if (projectile.layer !== 0) continue;
+                    const player = this.game.objectRegister.getById(projectile.playerId);
+                    if (player?.__type !== ObjectType.Player) continue;
+                    if (group && player.groupId === group.id) continue;
+                    if (team && player.teamId === team.id) continue;
 
-                if (v2.distance(projectile.pos, circle.pos) < 16) {
-                    collided = true;
-                    break;
+                    if (v2.distance(projectile.pos, pos) < 16) {
+                        return false;
+                    }
+                }
+
+                return true;
+            },
+            500,
+        );
+
+        return pos;
+    }
+
+    canPlayerSpawn(pos: Vec2) {
+        const circle = collider.createCircle(pos, GameConfig.player.radius);
+
+        if (this.isOnWater(pos, 0)) {
+            return false;
+        }
+
+        const objs = this.game.grid.intersectCollider(circle);
+
+        for (let i = 0; i < objs.length; i++) {
+            const obj = objs[i];
+            if (obj.layer !== 0) continue;
+            if (obj.__type === ObjectType.Obstacle) {
+                if (obj.collidable && coldet.test(circle, obj.collider)) {
+                    return false;
+                }
+            } else if (obj.__type === ObjectType.Building) {
+                for (let j = 0; j < obj.surfaces.length; j++) {
+                    const surface = obj.surfaces[j];
+                    for (let k = 0; k < surface.colliders.length; k++) {
+                        if (coldet.test(circle, surface.colliders[k])) {
+                            return false;
+                        }
+                    }
+                }
+
+                for (let j = 0; j < obj.zoomRegions.length; j++) {
+                    const zoomRegion = obj.zoomRegions[j];
+                    if (zoomRegion.zoomIn && coldet.test(circle, zoomRegion.zoomIn)) {
+                        return false;
+                    }
                 }
             }
         }
 
-        return circle.pos;
+        return true;
     }
 
     clampToMapBounds(pos: Vec2, rad = 0) {
@@ -2144,5 +2322,67 @@ export class GameMap {
         }
 
         return true;
+    }
+
+    isAabbOnWater(aabb: AABB): boolean {
+        if (
+            !coldet.aabbInsideAabb(
+                aabb.min,
+                aabb.max,
+                this.beachBounds.min,
+                this.beachBounds.max,
+            )
+        ) {
+            return true;
+        }
+        if (this.isAabbOnRiverWater(aabb)) return true;
+
+        return false;
+    }
+
+    isAabbOnRiverWater(aabb: AABB): boolean {
+        for (let i = 0; i < this.terrain.rivers.length; i++) {
+            const river = this.terrain.rivers[i];
+            if (
+                !coldet.testAabbAabb(river.aabb.min, river.aabb.max, aabb.min, aabb.max)
+            ) {
+                continue;
+            }
+            const points = collider.getPoints(aabb);
+            for (let j = 0; j < points.length; j++) {
+                if (math.pointInsidePolygon(points[j], river.waterPoly)) {
+                    return true;
+                }
+            }
+
+            if (coldet.testAabbPolygon(aabb.min, aabb.max, river.waterPoly)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    isAabbOnRiverShore(aabb: AABB): boolean {
+        for (let i = 0; i < this.terrain.rivers.length; i++) {
+            const river = this.terrain.rivers[i];
+            if (
+                !coldet.testAabbAabb(river.aabb.min, river.aabb.max, aabb.min, aabb.max)
+            ) {
+                continue;
+            }
+            const points = collider.getPoints(aabb);
+
+            for (let j = 0; j < points.length; j++) {
+                if (math.pointInsidePolygon(points[j], river.shorePoly)) {
+                    return true;
+                }
+            }
+            if (coldet.testAabbPolygon(aabb.min, aabb.max, river.shorePoly)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

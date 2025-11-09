@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { inArray } from "drizzle-orm";
 import type { Hono } from "hono";
 import { getCookie } from "hono/cookie";
 import type { UpgradeWebSocket, WSContext } from "hono/ws";
@@ -14,18 +15,24 @@ import {
     type TeamPlayGameMsg,
     zTeamClientMsg,
 } from "../../shared/types/team";
+import type { Loadout } from "../../shared/utils/loadout";
 import { assert } from "../../shared/utils/util";
 import type { ApiServer } from "./api/apiServer";
 import { validateSessionToken } from "./api/auth";
-import { isBanned } from "./api/routes/private/ModerationRouter";
+import { db } from "./api/db";
+import { usersTable } from "./api/db/schema";
+import { hashIp, isBanned } from "./api/routes/private/ModerationRouter";
 import { Config } from "./config";
+import { ServerLogger } from "./utils/logger";
 import {
-    HTTPRateLimit,
-    WebSocketRateLimit,
     getHonoIp,
+    HTTPRateLimit,
     isBehindProxy,
     validateUserName,
+    verifyTurnsStile,
+    WebSocketRateLimit,
 } from "./utils/serverHelpers";
+import type { FindGamePrivateBody } from "./utils/types";
 
 interface SocketData {
     rateLimit: Record<symbol, number>;
@@ -62,12 +69,15 @@ class Player {
 
     disconnectTimeout: ReturnType<typeof setTimeout>;
 
+    encodedIp: string;
+
     constructor(
         public socket: WSContext<SocketData>,
         public teamMenu: TeamMenu,
         public userId: string | null,
         public ip: string,
     ) {
+        this.encodedIp = hashIp(ip);
         // disconnect if didn't join a room in 5 seconds
         this.disconnectTimeout = setTimeout(() => {
             if (!this.room) {
@@ -105,6 +115,7 @@ class Room {
         enabledGameModeIdxs: [],
         gameModeIdx: 1,
         maxPlayers: 4,
+        captchaEnabled: false,
     };
 
     constructor(
@@ -114,6 +125,7 @@ class Room {
     ) {
         this.data.roomUrl = `#${id}`;
         this.data.enabledGameModeIdxs = teamMenu.allowedGameModeIdxs();
+        this.data.captchaEnabled = teamMenu.server.captchaEnabled;
 
         this.setProps(initialData);
     }
@@ -132,6 +144,7 @@ class Room {
     onMsg(player: Player, msg: ClientToServerTeamMsg) {
         if (player.room !== this) return;
 
+        player.lastMsgTime = Date.now();
         switch (msg.type) {
             case "changeName": {
                 player.setName(msg.data.name);
@@ -139,7 +152,6 @@ class Room {
                 break;
             }
             case "keepAlive": {
-                player.lastMsgTime = Date.now();
                 player.send("keepAlive", {});
                 break;
             }
@@ -225,6 +237,8 @@ class Room {
     async findGame(data: TeamPlayGameMsg["data"]) {
         if (this.data.findingGame) return;
         if (this.players.some((p) => p.inGame)) return;
+        const roomLeader = this.players[0];
+        if (!roomLeader) return;
 
         this.data.findingGame = true;
         this.sendState();
@@ -237,6 +251,19 @@ class Room {
 
         const tokenMap = new Map<Player, string>();
 
+        const userIds = this.players.map((p) => p.userId).filter((p) => p !== null);
+
+        let loadouts: Array<{ userId: string; loadout: Loadout }> = [];
+        if (userIds.length > 0) {
+            loadouts = await db
+                .select({
+                    userId: usersTable.id,
+                    loadout: usersTable.loadout,
+                })
+                .from(usersTable)
+                .where(inArray(usersTable.id, userIds));
+        }
+
         const playerData = this.players.map((p) => {
             const token = randomUUID();
             tokenMap.set(p, token);
@@ -244,12 +271,34 @@ class Room {
                 token,
                 userId: p.userId,
                 ip: p.ip,
-            };
+                loadout: loadouts.find((l) => l.userId == p.userId)?.loadout,
+            } satisfies FindGamePrivateBody["playerData"][0];
         });
 
         const mode = this.teamMenu.server.modes[this.data.gameModeIdx];
         if (!mode || !mode.enabled) {
             return;
+        }
+
+        if (this.data.captchaEnabled) {
+            if (!data.turnstileToken) {
+                this.data.lastError = "find_game_invalid_captcha";
+                this.sendState();
+                return;
+            }
+
+            try {
+                if (!(await verifyTurnsStile(data.turnstileToken, roomLeader.ip))) {
+                    this.data.lastError = "find_game_invalid_captcha";
+                    this.sendState();
+                    return;
+                }
+            } catch (err) {
+                this.teamMenu.logger.error("Failed verifying turnstile:", err);
+                this.data.lastError = "find_game_error";
+                this.sendState();
+                return;
+            }
         }
 
         const res = await this.teamMenu.server.findGame({
@@ -286,7 +335,7 @@ class Room {
             const token = tokenMap.get(player);
 
             if (!token) {
-                console.warn(`Missing token for player ${player.name}`);
+                this.teamMenu.logger.warn(`Missing token for player ${player.name}`);
                 continue;
             }
 
@@ -305,7 +354,9 @@ class Room {
 
     sendState() {
         const players = this.players.map((p) => p.data);
-
+        // all players must be logged in to disable it
+        this.data.captchaEnabled =
+            this.teamMenu.server.captchaEnabled && !this.players.every((p) => !!p.userId);
         for (const player of this.players) {
             player.send("state", {
                 localPlayerId: player.playerId,
@@ -316,19 +367,23 @@ class Room {
     }
 }
 
-const alphanumerics = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
-function randomString(len: number) {
+const teamCodeCharacters = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789";
+function generateTeamCode(): string {
     let str = "";
-    let i = 0;
-    while (i < len) {
-        str += alphanumerics.charAt(Math.floor(Math.random() * alphanumerics.length));
-        i++;
+    for (let i = 0; i < 4; i++) {
+        str += teamCodeCharacters.charAt(
+            Math.floor(Math.random() * teamCodeCharacters.length),
+        );
     }
     return `${str}`;
 }
 
 export class TeamMenu {
     rooms = new Map<string, Room>();
+
+    logger = new ServerLogger("TeamMenu");
+
+    playersByIp = new Map<string, Set<Player>>();
 
     constructor(public server: ApiServer) {
         setInterval(() => {
@@ -346,7 +401,8 @@ export class TeamMenu {
                 // kick players that haven't sent a keep alive msg in over a minute
                 // client sends it every 45 seconds
                 for (const player of room.players) {
-                    if (player.lastMsgTime < Date.now() - 60 * 1000) {
+                    if (player.lastMsgTime < Date.now() - 8 * 60 * 1000) {
+                        player.send("error", { type: "lost_conn" });
                         room.removePlayer(player);
                     }
                 }
@@ -366,8 +422,8 @@ export class TeamMenu {
     init(app: Hono, upgradeWebSocket: UpgradeWebSocket) {
         const teamMenu = this;
 
-        const httpRateLimit = new HTTPRateLimit(1, 2000);
-        const wsRateLimit = new WebSocketRateLimit(5, 1000, 5);
+        const httpRateLimit = new HTTPRateLimit(5, 2000);
+        const wsRateLimit = new WebSocketRateLimit(50, 1000, 5);
 
         app.get(
             "/team_v2",
@@ -375,7 +431,6 @@ export class TeamMenu {
                 const ip = getHonoIp(c, Config.apiServer.proxyIPHeader);
 
                 let closeReason: TeamMenuErrorType | undefined;
-
                 if (
                     !ip ||
                     httpRateLimit.isRateLimited(ip) ||
@@ -384,16 +439,8 @@ export class TeamMenu {
                     closeReason = "rate_limited";
                 }
 
-                if (!closeReason && (await isBehindProxy(ip!))) {
-                    closeReason = "behind_proxy";
-                }
-
-                try {
-                    if (await isBanned(ip!)) {
-                        closeReason = "banned";
-                    }
-                } catch (err) {
-                    console.error("/team_v2: Failed to check if IP is banned", err);
+                if (await isBanned(ip!)) {
+                    closeReason = "banned";
                 }
 
                 wsRateLimit.ipConnected(ip!);
@@ -405,10 +452,18 @@ export class TeamMenu {
                     try {
                         const account = await validateSessionToken(sessionId);
                         userId = account.user?.id || null;
+
+                        if (account.user?.banned) {
+                            userId = null;
+                        }
                     } catch (err) {
-                        console.error(`TeamMenu: Failed to validate session:`, err);
+                        this.logger.error(`Failed to validate session:`, err);
                         userId = null;
                     }
+                }
+
+                if (!closeReason && (await isBehindProxy(ip!, userId ? 0 : 3))) {
+                    closeReason = "behind_proxy";
                 }
 
                 return {
@@ -428,6 +483,7 @@ export class TeamMenu {
                                     },
                                 } satisfies TeamErrorMsg),
                             );
+                            teamMenu.logger.warn(`closed socket for ${closeReason}`);
                             ws.close();
                             return;
                         }
@@ -438,6 +494,7 @@ export class TeamMenu {
                         const data = ws.raw! as SocketData;
 
                         if (wsRateLimit.isRateLimited(data.rateLimit)) {
+                            teamMenu.logger.warn("Rate limited, closing socket.");
                             ws.close();
                             return;
                         }
@@ -448,7 +505,7 @@ export class TeamMenu {
                                 event.data as string,
                             );
                         } catch (err) {
-                            console.log(err);
+                            teamMenu.logger.error("Error processing message:", err);
                             ws.close();
                         }
                     },
@@ -467,6 +524,13 @@ export class TeamMenu {
     onOpen(ws: WSContext<SocketData>, userId: string | null, ip: string) {
         const player = new Player(ws, this, userId, ip);
         ws.raw!.player = player;
+
+        let players = this.playersByIp.get(player.encodedIp);
+        if (!players) {
+            players = new Set();
+            this.playersByIp.set(player.encodedIp, players);
+        }
+        players.add(player);
     }
 
     onMsg(ws: WSContext<SocketData>, data: string) {
@@ -476,6 +540,7 @@ export class TeamMenu {
             msg = JSON.parse(data);
             zTeamClientMsg.parse(msg);
         } catch {
+            this.logger.warn("Failed to parse message, closing socket.");
             ws.close();
             return;
         }
@@ -483,6 +548,7 @@ export class TeamMenu {
         const player = ws.raw?.player;
         // i really don't think this is necessary but /shrug
         if (!player) {
+            this.logger.warn("Player not found, closing socket.");
             ws.close();
             return;
         }
@@ -516,6 +582,7 @@ export class TeamMenu {
                         player.send("error", { type: "join_full" });
                         break;
                     }
+                    player.setName(msg.data.playerData.name);
 
                     room.addPlayer(player);
                 }
@@ -526,6 +593,7 @@ export class TeamMenu {
         // if we don't have a room at this point it meant both creation and joining failed
         // so close the socket
         if (!player.room) {
+            this.logger.debug("Player not in room, closing socket.");
             ws.close();
             return;
         }
@@ -538,8 +606,17 @@ export class TeamMenu {
         const player = ws.raw?.player;
 
         if (!player) {
+            this.logger.debug("Player not found, closing socket.");
             ws.close();
             return;
+        }
+
+        const byIp = this.playersByIp.get(player.encodedIp);
+        if (byIp) {
+            byIp.delete(player);
+            if (byIp.size === 0) {
+                this.playersByIp.delete(player.encodedIp);
+            }
         }
 
         // meh just to make sure we dont keep timeouts with references hanging
@@ -552,9 +629,9 @@ export class TeamMenu {
     }
 
     createRoom(data: ClientRoomData) {
-        let roomUrl = randomString(4);
+        let roomUrl = generateTeamCode();
         while (this.rooms.has(roomUrl)) {
-            roomUrl = randomString(4);
+            roomUrl = generateTeamCode();
         }
 
         const room = new Room(this, roomUrl, data);
@@ -564,5 +641,16 @@ export class TeamMenu {
 
     removeRoom(room: Room) {
         this.rooms.delete(room.id);
+    }
+
+    disconnectPlayers(encodedIp: string) {
+        const players = this.playersByIp.get(encodedIp);
+        if (!players) return;
+
+        for (const player of players) {
+            player.socket.close();
+        }
+        players.clear();
+        this.playersByIp.delete(encodedIp);
     }
 }

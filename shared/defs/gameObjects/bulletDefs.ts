@@ -1,4 +1,4 @@
-import { defineSkin } from "../../utils/util";
+import { util } from "../../utils/util";
 
 export interface BulletDef {
     readonly type: "bullet";
@@ -18,10 +18,12 @@ export interface BulletDef {
     maxFlareScale?: number;
     skipCollision?: boolean;
     onHit?: string;
+    noDistAdj?: boolean;
+    useExplosiveRoundsAlt?: boolean;
 }
 
-function defineBulletSkin(baseType: string, params: Partial<BulletDef>) {
-    return defineSkin<BulletDef>(BaseDefs, baseType, params);
+function defineBulletSkin(baseType: string, params: Partial<BulletDef>): BulletDef {
+    return util.mergeDeep({}, BaseDefs[baseType], params);
 }
 
 export const BaseDefs: Record<string, BulletDef> = {
@@ -66,7 +68,7 @@ export const BaseDefs: Record<string, BulletDef> = {
     },
     bullet_an94: {
         type: "bullet",
-        damage: 17.5,
+        damage: 20,
         obstacleDamage: 1,
         falloff: 0.94,
         distance: 300,
@@ -212,7 +214,7 @@ export const BaseDefs: Record<string, BulletDef> = {
     },
     bullet_garand: {
         type: "bullet",
-        damage: 35,
+        damage: 44,
         obstacleDamage: 1,
         falloff: 0.9,
         distance: 400,
@@ -235,6 +237,8 @@ export const BaseDefs: Record<string, BulletDef> = {
         tracerColor: "12gauge",
         tracerWidth: 0.1,
         tracerLength: 0.8,
+        useExplosiveRoundsAlt: true,
+        noDistAdj: true,
     },
     bullet_flechette: {
         type: "bullet",
@@ -248,6 +252,8 @@ export const BaseDefs: Record<string, BulletDef> = {
         tracerColor: "12gauge",
         tracerWidth: 0.075,
         tracerLength: 0.5,
+        useExplosiveRoundsAlt: true,
+        noDistAdj: true,
     },
     bullet_frag: {
         type: "bullet",
@@ -262,6 +268,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         tracerWidth: 0.1,
         tracerLength: 0.5,
         onHit: "explosion_usas",
+        noDistAdj: true,
     },
     bullet_slug: {
         type: "bullet",
@@ -288,6 +295,8 @@ export const BaseDefs: Record<string, BulletDef> = {
         tracerColor: "12gauge",
         tracerWidth: 0.1,
         tracerLength: 0.1,
+        useExplosiveRoundsAlt: true,
+        noDistAdj: true,
     },
     bullet_m9: {
         type: "bullet",
@@ -687,7 +696,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         maxFlareScale: 2,
         skipCollision: true,
     },
-    //used for guns that shoot projectiles since they still technically have to shoot a bullet of some kind
+    // used for guns that shoot projectiles since they still technically have to shoot a bullet of some kind
     bullet_invis: {
         type: "bullet",
         damage: 0,

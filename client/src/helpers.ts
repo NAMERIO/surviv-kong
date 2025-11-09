@@ -46,7 +46,7 @@ export const helpers = {
         const mapKeys = Object.keys(MapDefs);
         for (let i = 0; i < mapKeys.length; i++) {
             const mapKey = mapKeys[i];
-            const mapDef = MapDefs[mapKey as unknown as keyof typeof MapDefs];
+            const mapDef = MapDefs[mapKey as keyof typeof MapDefs];
             if (
                 !gameModes.find((x) => {
                     return x.mapId == mapDef.mapId;
@@ -150,11 +150,25 @@ export const helpers = {
                 el.contentEditable = editable;
                 el.readOnly = readOnly;
             } else {
-                $temp.select();
+                $temp.trigger("select");
             }
             document.execCommand("copy");
             $temp.remove();
         } catch (_e) {}
+    },
+    formatTime(time: number) {
+        const minutes = Math.floor(time / 60) % 60;
+        let seconds: string | number = Math.floor(time) % 60;
+        if (seconds < 10) {
+            seconds = `0${seconds}`;
+        }
+        let timeSurv = "";
+        timeSurv += `${minutes}:`;
+        timeSurv += seconds;
+        return timeSurv;
+    },
+    emoteImgToSvg(img: string) {
+        return img && img.length > 4 ? `../img/emotes/${img.slice(0, -4)}.svg` : "";
     },
     getSvgFromGameType: function (gameType: string) {
         const def = GameObjectDefs[gameType] as any;
@@ -211,5 +225,19 @@ export const helpers = {
             return Math.floor(Math.random() * Math.pow(2, 32)).toString(16);
         }
         return r32() + r32();
+    },
+    verifyTurnstile: function (enabled: boolean, cb: (token: string) => void) {
+        if (!enabled || !window.turnstile || !TURNSTILE_SITE_KEY) {
+            cb("");
+            return;
+        }
+        window.turnstile.render("#start-turnstile-container", {
+            sitekey: TURNSTILE_SITE_KEY,
+            appearance: "interaction-only",
+            callback: (token: string) => {
+                cb(token);
+                window.turnstile.remove("#start-turnstile-container");
+            },
+        });
     },
 };

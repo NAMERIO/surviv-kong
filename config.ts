@@ -2,8 +2,7 @@ import { randomBytes } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import hjson from "hjson";
-import type { ConfigType } from "./configType";
-import type { PartialConfig } from "./configType";
+import type { ConfigType, PartialConfig } from "./configType";
 import { TeamMode } from "./shared/gameConfig";
 import { util } from "./shared/utils/util";
 
@@ -20,7 +19,7 @@ export function getConfig(isProduction: boolean, dir: string) {
         gameServer: {
             host: "0.0.0.0",
             port: 8001,
-            apiServerUrl: "http://127.0.0.1:8000",
+            apiServerUrl: "",
             thisRegion: "local",
         },
         vite: {
@@ -28,6 +27,7 @@ export function getConfig(isProduction: boolean, dir: string) {
             port: 3000,
         },
         regions: {},
+        proxies: {},
         modes: [
             { mapName: "may", teamMode: TeamMode.Solo, enabled: true },
             { mapName: "main", teamMode: TeamMode.Duo, enabled: true },
@@ -37,9 +37,12 @@ export function getConfig(isProduction: boolean, dir: string) {
         gameTps: 100,
         netSyncTps: 33,
         processMode: isDev ? "single" : "multi",
-        perfLogging: {
-            enabled: isDev,
-            time: 10,
+        logging: {
+            logDate: true,
+            infoLogs: true,
+            debugLogs: isDev,
+            warnLogs: true,
+            errorLogs: true,
         },
         database: {
             enabled: true,
@@ -50,14 +53,16 @@ export function getConfig(isProduction: boolean, dir: string) {
             port: 5432,
         },
         oauthRedirectURI: "",
+        oauthBasePath: "/",
         secrets: {
             SURVEV_API_KEY: "",
             SURVEV_LOADOUT_SECRET: "",
             SURVEV_IP_SECRET: "",
         },
+        captchaEnabled: false,
         cachingEnabled: false,
         rateLimitsEnabled: isProduction,
-        randomizeDefaultPlayerName: false,
+        uniqueInGameNames: true,
         debug: {
             spawnMode: "default",
             allowBots: isDev,
@@ -66,14 +71,6 @@ export function getConfig(isProduction: boolean, dir: string) {
         },
         defaultItems: {},
     };
-
-    if (isDev) {
-        config.regions.local = {
-            https: false,
-            address: `127.0.0.1:${config.gameServer.port}`,
-            l10n: "index-local",
-        };
-    }
 
     const dirname = import.meta?.dirname || __dirname;
 
@@ -133,6 +130,34 @@ export function getConfig(isProduction: boolean, dir: string) {
         // apply this default after merging the local config
         // so if the local config changes the vite host and port it will still be right
         config.oauthRedirectURI = `http://${config.vite.host}:${config.vite.port}`;
+    }
+    const baseUrl = new URL(config.oauthRedirectURI);
+
+    if (!config.gameServer.apiServerUrl) {
+        // same as above, provide a more accurate default value if not set manually
+        config.gameServer.apiServerUrl = `http://${config.apiServer.host}:${config.apiServer.port}`;
+    }
+
+    const googleLogin = !!(
+        config.secrets.GOOGLE_CLIENT_ID && config.secrets.GOOGLE_SECRET_ID
+    );
+    const discordLogin = !!(
+        config.secrets.DISCORD_CLIENT_ID && config.secrets.DISCORD_CLIENT_ID
+    );
+
+    config.proxies[baseUrl.hostname] = {
+        google: googleLogin,
+        discord: discordLogin,
+        mock: config.debug.allowMockAccount,
+        ...(config.proxies[baseUrl.hostname] ?? {}),
+    };
+
+    if (isDev) {
+        config.regions.local ??= {
+            https: false,
+            address: `127.0.0.1:${config.gameServer.port}`,
+            l10n: "index-local",
+        };
     }
 
     return config;

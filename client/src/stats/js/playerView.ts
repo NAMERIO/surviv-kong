@@ -1,21 +1,24 @@
 import $ from "jquery";
 import { EmotesDefs } from "../../../../shared/defs/gameObjects/emoteDefs";
+import { TeamModeToString } from "../../../../shared/defs/types/misc";
 import type { TeamMode } from "../../../../shared/gameConfig";
-import type {
-    LeaderboardRequest,
-    MatchData,
-    MatchDataRequest,
-    MatchDataResponse,
-    MatchHistory,
-    MatchHistoryParams,
-    MatchHistoryResponse,
-    UserStatsRequest,
-    UserStatsResponse,
+import {
+    ALL_MAPS,
+    ALL_TEAM_MODES,
+    type LeaderboardRequest,
+    type MatchData,
+    type MatchDataRequest,
+    type MatchDataResponse,
+    type MatchHistory,
+    type MatchHistoryParams,
+    type MatchHistoryResponse,
+    type UserStatsRequest,
+    type UserStatsResponse,
 } from "../../../../shared/types/stats";
+import { api } from "../../api";
 import { device } from "../../device";
 import { helpers } from "../../helpers";
 import type { App } from "./app";
-import { emoteImgToSvg, formatTime, getCensoredBattletag } from "./helper";
 import loading from "./templates/loading.ejs";
 import matchData from "./templates/matchData.ejs";
 import matchHistory from "./templates/matchHistory.ejs";
@@ -30,11 +33,6 @@ const templates = {
     playerCards,
 };
 
-const TeamModeToString = {
-    1: "solo",
-    2: "duo",
-    4: "squad",
-};
 export interface TeamModes {
     teamMode: TeamMode;
     games: number;
@@ -60,19 +58,17 @@ function getPlayerCardData(
 
     const emoteDef = EmotesDefs[userData.player_icon];
     const texture = emoteDef
-        ? emoteImgToSvg(emoteDef.texture)
+        ? helpers.emoteImgToSvg(emoteDef.texture)
         : "/img/gui/player-gui.svg";
 
     let tmpSlug = userData.slug.toLowerCase();
     tmpSlug = tmpSlug.replace(userData.username.toLowerCase(), "");
 
     const tmpslugToShow =
-        tmpSlug != ""
-            ? getCensoredBattletag(`${userData.username}#${tmpSlug}`)
-            : getCensoredBattletag(userData.username);
+        tmpSlug != "" ? `${userData.username}#${tmpSlug}` : userData.username;
 
     const profile = {
-        username: getCensoredBattletag(userData.username),
+        username: userData.username,
         slugToShow: tmpslugToShow,
         banned: userData.banned,
         avatarTexture: texture,
@@ -106,7 +102,7 @@ function getPlayerCardData(
         addStat(bot, "Wins", mode.wins);
         addStat(bot, "Win %", mode.winPct);
         addStat(bot, "Kills", mode.kills);
-        addStat(bot, "Avg Survived", formatTime(mode.avgTimeAlive));
+        addStat(bot, "Avg Survived", helpers.formatTime(mode.avgTimeAlive));
         addStat(bot, "Most kills", mode.mostKills);
         addStat(bot, "K/G", mode.kpg);
         addStat(bot, "Most damage", mode.mostDamage);
@@ -174,7 +170,7 @@ class Query<T> {
         this.error = false;
 
         $.ajax({
-            url: url,
+            url: api.resolveUrl(url),
             type: "POST",
             data: JSON.stringify(args),
             contentType: "application/json; charset=utf-8",
@@ -208,7 +204,7 @@ export class PlayerView {
         summary: MatchHistory;
     }[] = [];
     moreGamesAvailable = true;
-    teamModeFilter = 7;
+    teamModeFilter = ALL_TEAM_MODES;
     userStats = new Query<UserStatsResponse>();
     userStatsCache = {} as Record<string, { error: boolean; data: UserStatsResponse }>;
     matchHistory = new Query<MatchHistoryResponse>();
@@ -221,15 +217,17 @@ export class PlayerView {
     );
     constructor(readonly app: App) {}
     getUrlParams() {
-        const location = window.location.href;
-        const params = new RegExp("stats/([^/?#]+).*$").exec(location) || [];
-        const slug = params[1] || "";
-        const interval = helpers.getParameterByName("t") || "all";
-        const mapId = helpers.getParameterByName("mapId") || "-1";
+        const params = new URLSearchParams(window.location.search);
+        const slug = params.get("slug") || "";
+        const interval = params.get("time") || "alltime";
+        const mapId = params.get("mapId") || ALL_MAPS;
+        const gameId = params.get("gameId") || "";
+
         return {
-            slug: slug,
-            interval: interval,
-            mapId: mapId,
+            slug,
+            interval,
+            mapId,
+            gameId,
         };
     }
     getGameByGameId(gameId: string) {
@@ -316,6 +314,18 @@ export class PlayerView {
                     this.matchHistoryCache[teamModeFilter] = this.games;
                 }
                 this.moreGamesAvailable = games.length >= count;
+
+                const gameId = this.getUrlParams().gameId;
+                if (gameId) {
+                    for (const game of this.games) {
+                        if (!game.expanded && game.summary.guid === gameId) {
+                            game.expanded = true;
+                            this.loadMatchData(gameId);
+                            break;
+                        }
+                    }
+                }
+
                 this.render();
             },
         );
@@ -355,11 +365,29 @@ export class PlayerView {
         }
 
         this.render();
+        this.updateSearchParams();
     }
-    onChangedParams() {
+
+    updateSearchParams() {
+        const slug = this.getUrlParams().slug;
         const time = $("#player-time").val();
         const mapId = $("#player-map-id").val();
-        window.history.pushState("", "", `?t=${time}&mapId=${mapId}`);
+
+        let searchP = new URLSearchParams();
+        searchP.set("slug", slug);
+        searchP.set("time", time as string);
+        searchP.set("mapId", mapId as string);
+
+        const selectedGame = this.games.find((g) => g.expanded);
+        if (selectedGame) {
+            searchP.set("gameId", selectedGame.summary.guid);
+        }
+
+        window.history.pushState("", "", `?${searchP.toString()}`);
+    }
+
+    onChangedParams() {
+        this.updateSearchParams();
 
         const params = this.getUrlParams();
         this.loadUserStats(
@@ -390,7 +418,7 @@ export class PlayerView {
         const timeSelector = this.el.find("#player-time");
         if (timeSelector) {
             timeSelector.val(params.interval);
-            timeSelector.change(() => {
+            timeSelector.on("change", () => {
                 this.onChangedParams();
             });
         }
@@ -398,7 +426,7 @@ export class PlayerView {
         const mapIdSelector = this.el.find("#player-map-id");
         if (mapIdSelector) {
             mapIdSelector.val(params.mapId);
-            mapIdSelector.change(() => {
+            mapIdSelector.on("change", () => {
                 this.onChangedParams();
             });
         }
@@ -415,6 +443,7 @@ export class PlayerView {
                 moreGamesAvailable: this.moreGamesAvailable,
                 loading: this.matchHistory.inProgress,
                 error: this.matchHistory.error,
+                formatTime: helpers.formatTime,
             });
         }
 
@@ -422,13 +451,13 @@ export class PlayerView {
         if (historySelector) {
             historySelector.html(historyContent);
 
-            $(".js-match-data").click((e) => {
+            $(".js-match-data").on("click", (e) => {
                 if (!$(e.target).is("a")) {
                     this.toggleMatchData($(e.currentTarget).data("game-id"));
                 }
             });
 
-            $(".js-match-load-more").click((_e) => {
+            $(".js-match-load-more").on("click", (_e) => {
                 const params = this.getUrlParams();
                 this.loadMatchHistory(
                     params.slug,
@@ -438,7 +467,7 @@ export class PlayerView {
                 this.render();
             });
 
-            $(".extra-team-mode-filter").click((e) => {
+            $(".extra-team-mode-filter").on("click", (e) => {
                 if (!this.matchHistory.inProgress) {
                     const _params = this.getUrlParams();
                     this.games = [];
@@ -448,17 +477,18 @@ export class PlayerView {
                 }
             });
 
+            const params = this.getUrlParams();
+
             // Match data
             let matchDataContent = "";
             const expandedGame = this.games.find((x) => x.expanded);
             if (expandedGame) {
-                const _params2 = this.getUrlParams();
                 let localId = 0;
                 // Get this player's player_id in this match
                 if (expandedGame.data) {
                     for (let i = 0; i < expandedGame.data.length; i++) {
                         const d = expandedGame.data[i];
-                        if (_params2.slug == d.slug) {
+                        if (params.slug == d.slug) {
                             localId = d.player_id || 0;
                             break;
                         }
@@ -470,10 +500,20 @@ export class PlayerView {
                     error: expandedGame.dataError,
                     loading: this.matchData.inProgress,
                     localId: localId,
+                    formatTime: helpers.formatTime,
                 });
             }
 
             $("#match-data").html(matchDataContent);
+
+            if (expandedGame && expandedGame.summary.guid === params.gameId) {
+                const elm = document.querySelector(
+                    `div[data-game-id="${params.gameId}"]`,
+                );
+                if (elm) {
+                    elm.scrollIntoView();
+                }
+            }
         }
 
         this.app.localization.localizeIndex();

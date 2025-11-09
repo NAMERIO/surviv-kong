@@ -1,5 +1,7 @@
 import type { MapDefs } from "./shared/defs/mapDefs";
 import type { TeamMode } from "./shared/gameConfig";
+import type { ProxyDef } from "./shared/types/api";
+import type { DeepPartial } from "./shared/utils/util";
 import type { Vec2 } from "./shared/utils/v2";
 
 /**
@@ -100,6 +102,8 @@ export interface ConfigType {
         }
     >;
 
+    proxies: Record<string, ProxyDef>;
+
     /**
      * Enabled game modes. this will update on the UI without requiring a client rebuild, since they are fetched from the server every time the page is loaded.
      *
@@ -127,7 +131,7 @@ export interface ConfigType {
      *
      * NOTE: Required at build time, unlike modes it wont update by fetching from the server!
      */
-    clientTheme: "main" | "easter" | "halloween" | "faction" | "snow" | "spring";
+    clientTheme: keyof typeof MapDefs;
 
     /**
      * Game tick rate.
@@ -152,15 +156,46 @@ export interface ConfigType {
     processMode: "single" | "multi";
 
     /**
-     * Game performance logging.
+     * Server logger configuration
      */
-    perfLogging: {
-        enabled: boolean;
+    logging: {
         /**
-         * Seconds between each game performance log.
+         * If the logger class should include the date.
+         * Useful to disable it when using logging tools that add a date by default (like journalctl)
          */
-        time: number;
+        logDate: boolean;
+
+        // logging categories enabled
+
+        /**
+         * Information logs
+         */
+        infoLogs: boolean;
+
+        /**
+         * Debug logs, disabled by default on production
+         */
+        debugLogs: boolean;
+
+        /**
+         * Warning logs
+         */
+        warnLogs: boolean;
+
+        /**
+         * Error logs, will also log to a webhook if `errorLoggingWebhook` is set.
+         */
+        errorLogs: boolean;
     };
+    /**
+     * Webhook URL to log server errors.
+     */
+    errorLoggingWebhook?: string;
+
+    /**
+     * Webhook URL to log client errors.
+     */
+    clientErrorLoggingWebhook?: string;
 
     /**
      * PostgreSQL Database configuration, this will enable features like accounts, IP bans, leaderboards etc.
@@ -189,6 +224,13 @@ export interface ConfigType {
      * Should be the full hosted website url, example: https://mycoolsurvevserver.io.
      */
     oauthRedirectURI: string;
+
+    /**
+     * Base path of the client
+     * Used if the API is on a subdomain instead of the main one
+     * So the auth code can redirect to it instead of `/`
+     */
+    oauthBasePath: string;
 
     /**
      * API keys for accounts and other features.
@@ -237,10 +279,25 @@ export interface ConfigType {
         GOOGLE_SECRET_ID?: string;
 
         /**
+         * Discord bot token.
+         */
+        DISCORD_BOT_TOKEN?: string;
+
+        /**
          * Enables proxycheck.io to ban VPNs and proxies from connecting.
          *
          */
         PROXYCHECK_KEY?: string;
+
+        /**
+         * Turnstile captcha secret key.
+         */
+        TURNSTILE_SECRET_KEY?: string;
+
+        /**
+         * Turnstile captcha site key.
+         */
+        TURNSTILE_SITE_KEY?: string;
 
         /**
          * Adin play ID: API key used for Adin play ads.
@@ -255,7 +312,18 @@ export interface ConfigType {
          * NOTE: This is only used by the client so must be present at the build time!
          */
         AIP_PLACEMENT_ID?: string;
+        GAMEMONETIZE_ID?: string;
     };
+
+    /**
+     * Role ID for users with moderation permissions
+     */
+    discordRoleId?: string;
+
+    /**
+     * Guild ID
+     */
+    discordGuildId?: string;
 
     /**
      * Enables caching some expensive API requests (like leaderboards) with Redis.
@@ -263,6 +331,14 @@ export interface ConfigType {
      * This requires a Redis server to be set up with the API server.
      */
     cachingEnabled: boolean;
+
+    /**
+     * If the turnstile captcha state is enabled.
+     * Used by the API server and will be returned on site_info API.
+     *
+     * Requires the turnstile keys on secrets object.
+     */
+    captchaEnabled: boolean;
 
     /**
      * Enables IP rate limits.
@@ -273,15 +349,10 @@ export interface ConfigType {
     rateLimitsEnabled: boolean;
 
     /**
-     * If default player name should be randomized instead of "Player".
+     * If in-game names should be unique.
      * Useful for banning players.
      */
-    randomizeDefaultPlayerName: boolean;
-
-    /**
-     * Webhook URL to log errors.
-     */
-    errorLoggingWebhook?: string;
+    uniqueInGameNames: boolean;
 
     /**
      * Debugging config for development :)
@@ -335,9 +406,4 @@ export interface ConfigType {
     };
 }
 
-type DeepPartial<T> = T extends object
-    ? {
-          [P in keyof T]?: DeepPartial<T[P]>;
-      }
-    : T;
 export type PartialConfig = DeepPartial<ConfigType>;

@@ -4,6 +4,7 @@ import type { Plane as PlaneData, UpdateMsg } from "../../../shared/net/updateMs
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
+import type { Vec2 } from "./../../../shared/utils/v2";
 import { v2 } from "../../../shared/utils/v2";
 import type { AudioManager } from "../audioManager";
 import type { Camera } from "../camera";
@@ -11,7 +12,6 @@ import type { SoundHandle } from "../lib/createJS";
 import type { Map } from "../map";
 import type { Renderer } from "../renderer";
 import type { UiManager } from "../ui/ui";
-import type { Vec2 } from "./../../../shared/utils/v2";
 import type { Player } from "./player";
 
 const planeElevateMult = 1.25;
@@ -136,7 +136,7 @@ class AirstrikeZone {
         }
     }
 
-    render(uiManager: UiManager, map: Map, _debug: unknown) {
+    render(uiManager: UiManager, map: Map) {
         // uiManager.getMapPosFromWorldPos is only valid after
         // uiManager.update() is run, so this logic must be run
         // afterward; render() is a reasonable place to do it.
@@ -374,11 +374,11 @@ export class PlaneBarn {
         }
     }
 
-    renderAirstrikeZones(uiManager: UiManager, map: Map, debug: unknown) {
+    renderAirstrikeZones(uiManager: UiManager, map: Map) {
         for (let i = 0; i < this.airstrikeZones.length; i++) {
             const zone = this.airstrikeZones[i];
             if (zone.active) {
-                zone.render(uiManager, map, debug);
+                zone.render(uiManager, map);
             }
         }
     }

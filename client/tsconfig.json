@@ -11,14 +11,12 @@
     "useDefineForClassFields": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "noEmit": true,
     "allowImportingTsExtensions": true,
     "allowJs": true,
     "strict": true,
     "skipLibCheck": true,
-    "jsx": "react",
-    "jsxFactory": "h",
-    "jsxFragmentFactory": "Fragment",
-    "types": ["vite/client"]
+    "types": ["vite/client", "turnstile-types"]
   },
   "include": [
     "src/**/*.ts",

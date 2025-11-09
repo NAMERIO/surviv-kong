@@ -2,6 +2,7 @@ import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import { v2 } from "../../utils/v2";
 import type { MapDef } from "../mapDefs";
+import { MapId } from "../types/misc";
 import { Main, type PartialMapDef } from "./baseDefs";
 
 export enum TeamColor {
@@ -10,24 +11,23 @@ export enum TeamColor {
     Blue = 2,
 }
 
-export const SpecialAirdropConfig = {
-    startCircle: 1,
-    endCircle: 3,
-    aliveCountThreshold: 0.2,
-};
-
 const mapDef: PartialMapDef = {
-    mapId: 3,
+    mapId: MapId.Faction,
     desc: {
         name: "50v50",
         icon: "img/gui/star.svg",
         buttonCss: "btn-mode-faction",
         buttonText: "50v50",
+        backgroundImg: "img/main_splash_0_7_0.png",
     },
     assets: {
         audio: [
             {
                 name: "lt_assigned_01",
+                channel: "ui",
+            },
+            {
+                name: "captain_assigned_01",
                 channel: "ui",
             },
             {
@@ -87,15 +87,15 @@ const mapDef: PartialMapDef = {
     },
     biome: {
         colors: {
-            background: 333348,
-            water: 465718,
-            waterRipple: 11792639,
-            beach: 9328178,
-            riverbank: 6632211,
-            grass: 5136680,
-            underground: 1772803,
-            playerSubmerge: 1192009,
-            playerGhillie: 5005348,
+            background: 0x51624,
+            water: 0x71b36,
+            waterRipple: 0xb3f0ff,
+            beach: 0x8e5632,
+            riverbank: 0x653313,
+            grass: 0x4e6128,
+            underground: 0x1b0d03,
+            playerSubmerge: 0x123049,
+            playerGhillie: 0x4c6024,
         },
     },
     gameMode: {
@@ -259,9 +259,9 @@ const mapDef: PartialMapDef = {
             { name: "ak47", count: 1, weight: 2.7 },
             { name: "scar", count: 1, weight: 0.01 },
             { name: "dp28", count: 1, weight: 0.5 },
+            { name: "bar", count: 1, weight: 0.05 },
             { name: "mosin", count: 1, weight: 0.1 },
             { name: "m39", count: 1, weight: 0.1 },
-            { name: "vss", count: 1, weight: 0.1 },
             { name: "mp5", count: 1, weight: 10 },
             { name: "mac10", count: 1, weight: 6 },
             { name: "ump9", count: 1, weight: 3 },
@@ -273,14 +273,15 @@ const mapDef: PartialMapDef = {
             { name: "m9", count: 1, weight: 19 },
             { name: "m93r", count: 1, weight: 5 },
             { name: "glock", count: 1, weight: 7 },
-            { name: "deagle", count: 1, weight: 0.05 },
+            { name: "deagle", count: 1, weight: 0.05, preload: true },
             { name: "vector", count: 1, weight: 0.01 },
             { name: "sv98", count: 1, weight: 0.01 },
             { name: "spas12", count: 1, weight: 1 },
             { name: "qbb97", count: 1, weight: 0.01 },
-            { name: "flare_gun", count: 1, weight: 0.1 },
+            { name: "flare_gun", count: 1, weight: 0.1, preload: true },
             { name: "groza", count: 1, weight: 0.8 },
             { name: "scout_elite", count: 1, weight: 0.05 },
+            { name: "vss", count: 1, weight: 0.1 }, // ?
         ],
         tier_toilet: [
             { name: "tier_guns", count: 1, weight: 0.1 },
@@ -329,6 +330,7 @@ const mapDef: PartialMapDef = {
         tier_airdrop_uncommon: [
             { name: "mk12", count: 1, weight: 2.5 },
             { name: "scar", count: 1, weight: 0.75 },
+            { name: "bar", count: 1, weight: 1 },
             { name: "mosin", count: 1, weight: 2.5 },
             { name: "m39", count: 1, weight: 2.5 },
             { name: "saiga", count: 1, weight: 1 },
@@ -338,6 +340,7 @@ const mapDef: PartialMapDef = {
             { name: "qbb97", count: 1, weight: 1.5 },
             { name: "m9", count: 1, weight: 0.01 },
             { name: "scout_elite", count: 1, weight: 1.5 },
+            { name: "vss", count: 1, weight: 2.5 }, // !
         ],
         tier_ghillie: [
             {
@@ -443,7 +446,7 @@ const mapDef: PartialMapDef = {
                 shack_03b: 3,
                 greenhouse_01: 1,
                 cache_01: 1,
-                cache_02: 1,
+                cache_02f: 1,
                 cache_07: 1,
                 mansion_structure_01: 1,
                 bunker_structure_01: { odds: 1 },
@@ -454,7 +457,6 @@ const mapDef: PartialMapDef = {
                 chest_03f: 1,
                 mil_crate_02: { odds: 1 },
                 tree_02: 3,
-                river_town_01: 1,
             },
         ],
         randomSpawns: [],

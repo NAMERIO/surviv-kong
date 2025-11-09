@@ -10,7 +10,11 @@ const poolConnection = new pg.Pool({
 });
 
 poolConnection.on("connect", () => {
-    server.logger.log("Connected to database");
+    server.logger.info("Connected to database");
+});
+
+poolConnection.on("error", (err) => {
+    server.logger.error("pg pool error:", err);
 });
 
 export const db = drizzle({

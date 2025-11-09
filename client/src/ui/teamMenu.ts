@@ -6,6 +6,7 @@ import type {
     RoomData,
     ServerToClientTeamMsg,
     TeamMenuErrorType,
+    TeamPlayGameMsg,
     TeamStateMsg,
 } from "../../../shared/types/team";
 import { api } from "../api";
@@ -14,6 +15,7 @@ import type { ConfigManager } from "../config";
 import { device } from "../device";
 import { helpers } from "../helpers";
 import type { PingTest } from "../pingTest";
+import { SDK } from "../sdk";
 import type { SiteInfo } from "../siteInfo";
 import type { Localization } from "./localization";
 
@@ -28,6 +30,7 @@ function errorTypeToString(type: string, localization: Localization) {
         find_game_error: localization.translate("index-failed-finding-game"),
         find_game_full: localization.translate("index-failed-finding-game"),
         find_game_invalid_protocol: localization.translate("index-invalid-protocol"),
+        find_game_invalid_captcha: localization.translate("index-invalid-captcha"),
         kicked: localization.translate("index-team-kicked"),
         banned: localization.translate("index-ip-banned"),
         behind_proxy: "behind_proxy", // this will get passed to the main app to show a modal
@@ -84,27 +87,29 @@ export class TeamMenu {
         public leaveCb: (err: string) => void,
     ) {
         // Listen for ui modifications
-        this.serverSelect.change(() => {
+        this.serverSelect.on("change", () => {
             const e = this.serverSelect.find(":selected").val() as string;
             this.pingTest.start([e]);
             this.setRoomProperty("region", e);
         });
-        this.queueMode1.click(() => {
+        this.queueMode1.on("click", () => {
             this.setRoomProperty("gameModeIdx", 1);
         });
-        this.queueMode2.click(() => {
+        this.queueMode2.on("click", () => {
             this.setRoomProperty("gameModeIdx", 2);
         });
-        this.fillAuto.click(() => {
+        this.fillAuto.on("click", () => {
             this.setRoomProperty("autoFill", true);
         });
-        this.fillNone.click(() => {
+        this.fillNone.on("click", () => {
             this.setRoomProperty("autoFill", false);
         });
         this.playBtn.on("click", () => {
-            this.tryStartGame();
+            SDK.requestMidGameAd(() => {
+                this.tryStartGame();
+            });
         });
-        $("#team-copy-url, #team-desc-text").click((e) => {
+        $("#team-copy-url, #team-desc-text").on("click", (e) => {
             const t = $("<div/>", {
                 class: "copy-toast",
                 html: "Copied!",
@@ -129,7 +134,7 @@ export class TeamMenu {
                     },
                 },
             );
-            let codeToCopy = $("#team-url").html();
+            let codeToCopy = $("#team-url").text();
             // if running on an iframe
             if (window !== window.top) {
                 codeToCopy = this.roomData.roomUrl.substring(1);
@@ -144,7 +149,7 @@ export class TeamMenu {
         if (!device.mobile) {
             // Hide invite link
             this.hideUrl = false;
-            $("#team-hide-url").click((e) => {
+            $("#team-hide-url").on("click", (e) => {
                 const el = e.currentTarget;
                 this.hideUrl = !this.hideUrl;
                 $("#team-desc-text, #team-code-text").css({
@@ -157,22 +162,18 @@ export class TeamMenu {
                 });
             });
         }
+
+        setInterval(() => {
+            if (this.joined) {
+                this.sendMessage("keepAlive", {});
+            }
+        }, 10 * 1000);
     }
 
     getPlayerById(playerId: number) {
         return this.players.find((x) => {
             return x.playerId == playerId;
         });
-    }
-
-    update(dt: number) {
-        if (this.joined) {
-            this.keepAliveTimeout -= dt;
-            if (this.keepAliveTimeout < 0) {
-                this.keepAliveTimeout = 45;
-                this.sendMessage("keepAlive", {});
-            }
-        }
     }
 
     connect(create: boolean, roomUrl: string) {
@@ -226,21 +227,17 @@ export class TeamMenu {
                     this.leave(errMsg);
                 };
                 this.ws.onopen = () => {
-                    // HACK
-                    // TODO: remove after https://github.com/honojs/middleware/issues/1129 is fixed
-                    setTimeout(() => {
-                        if (this.create) {
-                            this.sendMessage("create", {
-                                roomData: this.roomData,
-                                playerData: this.playerData,
-                            });
-                        } else {
-                            this.sendMessage("join", {
-                                roomUrl: this.roomData.roomUrl,
-                                playerData: this.playerData,
-                            });
-                        }
-                    }, 100);
+                    if (this.create) {
+                        this.sendMessage("create", {
+                            roomData: this.roomData,
+                            playerData: this.playerData,
+                        });
+                    } else {
+                        this.sendMessage("join", {
+                            roomUrl: this.roomData.roomUrl,
+                            playerData: this.playerData,
+                        });
+                    }
                 };
                 this.ws.onmessage = (e) => {
                     if (this.active) {
@@ -274,6 +271,8 @@ export class TeamMenu {
                 errTxt = errorTypeToString(errType, this.localization);
             }
             this.leaveCb(errTxt);
+
+            SDK.hideInviteButton();
         }
     }
 
@@ -310,6 +309,8 @@ export class TeamMenu {
                     this.roomData.autoFill = ourRoomData.autoFill;
                 }
                 this.refreshUi();
+                // Since the only way to get the roomID (ig?) is from state, each time receiving state, we can show the invite button
+                SDK.showInviteButton(stateData.room.roomUrl.replace("#", ""));
                 break;
             }
             case "joinGame":
@@ -360,12 +361,16 @@ export class TeamMenu {
             if (paramZone !== undefined && paramZone.length > 0) {
                 zones = [paramZone];
             }
-            const matchArgs = {
+            const matchArgs: TeamPlayGameMsg["data"] = {
                 version,
                 region,
                 zones,
             };
-            this.sendMessage("playGame", matchArgs);
+
+            helpers.verifyTurnstile(this.roomData.captchaEnabled, (token) => {
+                matchArgs.turnstileToken = token;
+                this.sendMessage("playGame", matchArgs);
+            });
             this.roomData.findingGame = true;
             this.refreshUi();
         }
@@ -408,6 +413,13 @@ export class TeamMenu {
         ) {
             $("#modal-refresh").fadeIn(200);
             this.displayedInvalidProtocolModal = true;
+        }
+
+        // Set captcha to enabled if we fail the captcha
+        // This can happen if it was disabled when the page loaded which would meant it was sending an empty token
+        // And we only fetch the state when the page loads...
+        if (this.roomData.lastError === "find_game_invalid_captcha") {
+            this.siteInfo.info.captchaEnabled = true;
         }
 
         // Show/hide team connecting/contents
@@ -454,14 +466,27 @@ export class TeamMenu {
 
             // Invite link
             if (this.roomData.roomUrl) {
-                const roomUrl = `${window.location.href.replace(window.location.hash, "")}${this.roomData.roomUrl}`;
                 const roomCode = this.roomData.roomUrl.substring(1);
+                $("#team-code").text(roomCode);
 
-                $("#team-url").html(roomUrl);
-                $("#team-code").html(roomCode);
+                if (SDK.supportsInviteLink()) {
+                    SDK.getInviteLink(roomCode).then((sdkUrl) => {
+                        $("#team-url").text(sdkUrl!);
+                    });
+                } else {
+                    const roomUrl = new URL(window.location.href);
+                    roomUrl.search = ""; // removes ?t=<timestamp> that is set when the client receives an invalid protocol error
+                    roomUrl.hash = this.roomData.roomUrl;
 
-                if (window.history) {
-                    window.history.replaceState("", "", this.roomData.roomUrl);
+                    const url = new URL(window.location.href);
+                    url.search = "";
+                    url.hash = this.roomData.roomUrl;
+
+                    $("#team-url").text(url.toString());
+
+                    if (window.history) {
+                        window.history.replaceState("", "", this.roomData.roomUrl);
+                    }
                 }
             }
 
@@ -593,7 +618,7 @@ export class TeamMenu {
                         this.editingName = false;
                         this.refreshUi();
                     };
-                    n.keypress((e) => {
+                    n.on("keydown", (e) => {
                         if (e.which === 13) {
                             m();
                             return false;
@@ -641,10 +666,10 @@ export class TeamMenu {
                     );
                 }
                 teamMembers.append(member);
-                n?.focus();
+                n?.trigger("focus");
             }
 
-            $(".icon-kick", teamMembers).click((e) => {
+            $(".icon-kick", teamMembers).on("click", (e) => {
                 const playerId = Number($(e.currentTarget).attr("data-playerid"));
                 this.sendMessage("kick", {
                     playerId,

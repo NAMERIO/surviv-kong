@@ -1,13 +1,15 @@
 import { util } from "../../utils/util";
 import { v2 } from "../../utils/v2";
+import { MapId } from "../types/misc";
 import { Main, type PartialMapDef } from "./baseDefs";
 
 const mapDef: PartialMapDef = {
-    mapId: 7,
+    mapId: MapId.Cobalt,
     desc: {
         name: "Cobalt",
         icon: "img/gui/cobalt.svg",
         buttonCss: "btn-mode-cobalt",
+        backgroundImg: "img/main_splash_cobalt.png",
     },
     assets: {
         audio: [
@@ -21,14 +23,14 @@ const mapDef: PartialMapDef = {
     },
     biome: {
         colors: {
-            background: 134680,
-            water: 13681,
-            beach: 6834230,
-            riverbank: 4472122,
-            grass: 5069416,
-            underground: 1772803,
-            playerSubmerge: 1192009,
-            playerGhillie: 4937830,
+            background: 0x20e18,
+            water: 0x3571,
+            beach: 0x684836,
+            riverbank: 0x443d3a,
+            grass: 0x4d5a68,
+            underground: 0x1b0d03,
+            playerSubmerge: 0x123049,
+            playerGhillie: 0x4b5866,
         },
         particles: {},
     },
@@ -65,6 +67,8 @@ const mapDef: PartialMapDef = {
         tier_islander_outfit: [{ name: "tier_outfits", count: 1, weight: 1 }],
         tier_imperial_outfit: [{ name: "tier_outfits", count: 1, weight: 1 }],
 
+        tier_club_melee: [{ name: "tier_outfits", count: 1, weight: 1 }],
+
         tier_airdrop_outfits: [{ name: "outfitGhillie", count: 1, weight: 1 }],
     },
     /* STRIP_FROM_PROD_CLIENT:START */
@@ -81,6 +85,14 @@ const mapDef: PartialMapDef = {
                     {
                         pos: v2.create(0.5, 0.5),
                         rad: 100,
+                    },
+                    {
+                        rad: 100,
+                        genOnShore: true,
+                    },
+                    {
+                        rad: 100,
+                        genOnShore: true,
                     },
                 ],
             },
@@ -161,7 +173,11 @@ const mapDef: PartialMapDef = {
                 stone_03: "stone_03cb",
             },
         ],
-        importantSpawns: ["bunker_structure_09"],
+        importantSpawns: [
+            "club_complex_01",
+            "warehouse_complex_01",
+            "bunker_structure_09",
+        ],
     },
     /* STRIP_FROM_PROD_CLIENT:END */
     gameMode: {

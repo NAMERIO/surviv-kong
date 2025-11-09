@@ -17,6 +17,7 @@ import { errorLogManager } from "../errorLogs";
 import type { Game } from "../game";
 import { type Gas, GasRenderer, GasSafeZoneRenderer } from "../gas";
 import { helpers } from "../helpers";
+import type { InputBinds, InputBindUi } from "./../inputBinds";
 import type { SoundHandle } from "../lib/createJS";
 import type { Map } from "../map";
 import { MapIndicatorBarn } from "../objects/mapIndicator";
@@ -24,7 +25,7 @@ import { type MapSprite, MapSpriteBarn } from "../objects/mapSprite";
 import type { ParticleBarn } from "../objects/particles";
 import type { PlaneBarn } from "../objects/plane";
 import type { Player, PlayerBarn } from "../objects/player";
-import type { InputBindUi, InputBinds } from "./../inputBinds";
+import { SDK } from "../sdk";
 import type { Localization } from "./localization";
 import { PieTimer } from "./pieTimer";
 import type { Touch } from "./touch";
@@ -359,11 +360,7 @@ export class UiManager {
         });
 
         // Display full screen
-        let showFullScreen = device.os == "ios" ? "none" : "block";
-        if (device.touch) {
-            showFullScreen = "none";
-        }
-        $("#btn-game-fullscreen").css("display", showFullScreen);
+        $("#btn-game-fullscreen").css("display", SDK.isAnySDK ? "none" : "block");
 
         this.resumeButton.on("mousedown", (e) => {
             e.stopPropagation();
@@ -657,7 +654,6 @@ export class UiManager {
         player: Player,
         map: Map,
         gas: Gas,
-        _i: unknown,
         playerBarn: PlayerBarn,
         camera: Camera,
         teamMode: TeamMode,
@@ -823,8 +819,6 @@ export class UiManager {
                         role: playerStatus.role,
                     },
                     playerInfo.playerId,
-                    playerInfo.teamId,
-                    playerBarn,
                 );
 
                 // Team indicators
@@ -938,7 +932,7 @@ export class UiManager {
                 top: 12,
             });
         }
-        this.updatePlayerMapSprites(dt, player, playerBarn, map);
+        this.updatePlayerMapSprites(player, playerBarn, map);
         this.mapSpriteBarn.update(dt, this, map);
         this.m_pieTimer.update(dt, camera);
 
@@ -967,12 +961,7 @@ export class UiManager {
         }
     }
 
-    updatePlayerMapSprites(
-        _dt: unknown,
-        activePlayer: Player,
-        playerBarn: PlayerBarn,
-        map: Map,
-    ) {
+    updatePlayerMapSprites(activePlayer: Player, playerBarn: PlayerBarn, map: Map) {
         const activePlayerInfo = playerBarn.getPlayerInfo(activePlayer.__id);
 
         let spriteIdx = 0;
@@ -1016,12 +1005,12 @@ export class UiManager {
 
             // Add the inner dot sprite
             let texture = "player-map-inner.img";
-            if (customMapIcon) {
-                texture = roleDef.mapIcon!.alive;
+            if (customMapIcon && roleDef.mapIcon?.alive) {
+                texture = roleDef.mapIcon.alive;
             }
             if (playerStatus.dead) {
                 texture = "skull-outlined.img";
-                if (customMapIcon) {
+                if (roleDef?.mapIcon?.dead) {
                     texture = roleDef.mapIcon!.dead;
                 }
             } else if (playerStatus.downed) {
@@ -1282,6 +1271,8 @@ export class UiManager {
     }
 
     removeAds() {
+        SDK.removeAllAds();
+
         if (!window.aiptag) return;
         const ads = ["728x90", "300x250_2"];
         for (let i = 0; i < ads.length; i++) {
@@ -1293,8 +1284,15 @@ export class UiManager {
     }
 
     refreshMainPageAds() {
-        if (!window.aiptag) return;
         const ads = ["728x90"];
+
+        if (SDK.isCrazyGames) {
+            for (let i = 0; i < ads.length; i++) {
+                SDK.requestAd(ads[i]);
+            }
+        }
+
+        if (!window.aiptag) return;
         for (let i = 0; i < ads.length; i++) {
             const ad = ads[i];
             window.aiptag.cmd.display.push(() => {
@@ -2021,14 +2019,7 @@ export class UiManager {
         this.waitingText.css("display", waiting ? "block" : "none");
     }
 
-    m_render(
-        playerPos: Vec2,
-        gas: Gas,
-        _camera: unknown,
-        map: Map,
-        planeBarn: PlaneBarn,
-        debug: unknown,
-    ) {
+    m_render(playerPos: Vec2, gas: Gas, map: Map, planeBarn: PlaneBarn) {
         // Gas
         const circle = gas.getCircle(1);
         const gasPos = this.getMapPosFromWorldPos(circle.pos, map);
@@ -2058,7 +2049,7 @@ export class UiManager {
             drawLine,
         );
 
-        planeBarn.renderAirstrikeZones(this, map, debug);
+        planeBarn.renderAirstrikeZones(this, map);
     }
 
     updateHealthBar(
@@ -2120,8 +2111,6 @@ export class UiManager {
         health: number,
         status: PrevStatus,
         playerId: number,
-        _o: unknown,
-        _s: unknown,
     ) {
         const groupId = this.teamSelectors[slotIdx].groupId;
         const teamName = this.teamSelectors[slotIdx].teamName;
@@ -2335,14 +2324,13 @@ export class UiManager {
                 }
                 this.escMenuDisplayed = true;
                 this.escMenuElem.css("display", "block");
-                $("#ui-center").hover(
-                    () => {
+                $("#ui-center")
+                    .on("mouseenter", () => {
                         this.inputBinds.menuHovered = true;
-                    },
-                    () => {
+                    })
+                    .on("mouseleave", () => {
                         this.inputBinds.menuHovered = false;
-                    },
-                );
+                    });
                 this.inputBinds.menuHovered = false;
                 if (this.roleMenuActive) {
                     this.hideRoleMenu();

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { MapDefs } from "../defs/mapDefs";
 import type { TeamMode } from "../gameConfig";
 
 export const zFindGameBody = z.object({
@@ -8,6 +9,7 @@ export const zFindGameBody = z.object({
     playerCount: z.number(),
     autoFill: z.boolean(),
     gameModeIdx: z.number(),
+    turnstileToken: z.string().optional(),
 });
 
 export type FindGameBody = z.infer<typeof zFindGameBody>;
@@ -22,12 +24,18 @@ export interface FindGameMatchData {
 }
 
 export type FindGameError =
+    | "invalid_ip"
+    | "find_game_failed"
+    | "mode_disabled"
+    | "invalid_region"
+    | "failed_to_parse_body"
     | "full"
     | "invalid_protocol"
     | "join_game_failed"
     | "rate_limited"
     | "banned"
-    | "behind_proxy";
+    | "behind_proxy"
+    | "invalid_captcha";
 
 export type FindGameResponse =
     | {
@@ -52,14 +60,16 @@ export type FindGameResponse =
           error?: undefined;
       };
 
-export interface Info {
+export interface SiteInfoRes {
     country: string;
     gitRevision: string;
+    captchaEnabled: boolean;
     modes: Array<{
         mapName: string;
         teamMode: TeamMode;
         enabled: boolean;
     }>;
+    clientTheme: keyof typeof MapDefs;
     pops: Record<
         string,
         {
@@ -77,4 +87,12 @@ export interface Info {
         url: string;
         img: string;
     }>;
+}
+
+export interface ProxyDef {
+    apiUrl?: string;
+    google?: boolean;
+    discord?: boolean;
+    mock?: boolean;
+    all?: boolean;
 }

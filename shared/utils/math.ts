@@ -231,8 +231,7 @@ export const math = {
     pointInsidePolygon(point: Vec2, poly: Vec2[]) {
         // ray-casting algorithm based on
         // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
-        const { x } = point;
-        const { y } = point;
+        const { x, y } = point;
         let inside = false;
         const count = poly.length;
         for (let i = 0, j = count - 1; i < count; j = i++) {
@@ -297,6 +296,14 @@ export const math = {
             );
         }
         return area;
+    },
+
+    transformSegment(p0: Vec2, p1: Vec2, pos: Vec2, dir: Vec2) {
+        const ang = Math.atan2(dir.y, dir.x);
+        return {
+            p0: v2.add(pos, v2.rotate(p0, ang)),
+            p1: v2.add(pos, v2.rotate(p1, ang)),
+        };
     },
 
     // http://paulbourke.net/geometry/pointlineplane/javascript.txt

@@ -1,27 +1,42 @@
-import { existsSync, rmSync } from "node:fs";
-import esbuild from "esbuild";
+import fs from "node:fs";
+import esbuild, { type BuildOptions } from "esbuild";
+import { pluginDir, readDirectory } from "./game/pluginManager";
 
-if (existsSync("./dist")) {
-    rmSync("./dist", { recursive: true });
+if (fs.existsSync("./dist")) {
+    fs.rmSync("./dist", { recursive: true });
 }
 
-esbuild.buildSync({
-    entryPoints: [
-        "./src/gameServer.ts",
-        "./src/game/gameProcess.ts",
-        "./src/api/index.ts",
-    ],
+const esbuildConfig: BuildOptions = {
     bundle: true,
-    minify: true,
+    minify: false,
+    minifySyntax: true,
     outdir: "./dist",
     platform: "node",
     packages: "external",
     entryNames: "[name]",
     sourcemap: "linked",
-    logLevel: "debug",
+    logLevel: "info",
     format: "esm",
-    splitting: true,
     define: {
         "process.env.NODE_ENV": "'production'",
     },
+};
+
+esbuild.buildSync({
+    ...esbuildConfig,
+    entryPoints: [
+        "./src/gameServer.ts",
+        "./src/game/gameProcess.ts",
+        "./src/api/index.ts",
+    ],
 });
+
+if (fs.existsSync(pluginDir)) {
+    const pluginPaths = readDirectory(pluginDir);
+
+    esbuild.buildSync({
+        ...esbuildConfig,
+        outdir: "./dist/plugins",
+        entryPoints: pluginPaths,
+    });
+}

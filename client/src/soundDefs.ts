@@ -22,8 +22,6 @@ export interface ReverbDef {
     echoLowPass?: number;
 }
 
-declare const MENU_MUSIC: string;
-
 const Sounds: Record<string, Record<string, SoundDef>> = {
     players: {
         m9_01: {
@@ -1746,6 +1744,12 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1.75,
             maxInstances: 1,
         },
+        captain_assigned_01: {
+            path: "audio/ui/captain_assigned_01.mp3",
+            volume: 2,
+            preload: false,
+            maxInstances: 1,
+        },
         lt_assigned_01: {
             path: "audio/ui/lt_assigned_01.mp3",
             volume: 1,
@@ -1826,7 +1830,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
     },
     music: {
         menu_music: {
-            path: MENU_MUSIC,
+            path: "audio/ambient/menu_music_01.mp3",
             volume: 1,
             loadPriority: 2,
         },

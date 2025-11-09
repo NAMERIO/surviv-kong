@@ -1,5 +1,6 @@
 import * as PIXI from "pixi.js-legacy";
 import { GameConfig } from "../../shared/gameConfig";
+import { Constants } from "../../shared/net/net";
 import type { GasData } from "../../shared/net/updateMsg";
 import { math } from "../../shared/utils/math";
 import { type Vec2, v2 } from "../../shared/utils/v2";
@@ -148,7 +149,7 @@ export class GasSafeZoneRenderer {
                 const isSafe = v2.length(v2.sub(playerPos, safePos)) < safeRad;
                 const alpha = isSafe ? 0.5 : 1;
                 this.lineGfx.clear();
-                this.lineGfx.lineStyle(2, 65280, alpha);
+                this.lineGfx.lineStyle(2, 0xff00, alpha);
                 this.lineGfx.moveTo(playerPos.x, playerPos.y);
                 this.lineGfx.lineTo(safePos.x, safePos.y);
             }
@@ -175,7 +176,7 @@ export class Gas {
     };
 
     constructor(canvasMode: boolean) {
-        const startRad = (Math.sqrt(2) + 0.01) * 1024;
+        const startRad = (Math.sqrt(2) + 0.01) * Constants.MaxPosition;
         this.circleOld = {
             pos: v2.create(0, 0),
             rad: startRad,
@@ -216,7 +217,7 @@ export class Gas {
         this.interpolationT = 0;
     }
 
-    setFullState(circleT: number, data: GasData, _map: unknown, ui: UiManager) {
+    setFullState(circleT: number, data: GasData, ui: UiManager) {
         // Update Ui
         if (data.mode != this.mode) {
             const timeLeft = Math.ceil(data.duration * (1 - circleT));

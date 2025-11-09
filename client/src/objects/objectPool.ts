@@ -1,8 +1,8 @@
 import type { BitStream } from "../../../shared/net/net";
 import {
     type ObjectData,
-    ObjectType,
     type ObjectsPartialData,
+    ObjectType,
 } from "../../../shared/net/objectSerializeFns";
 import { assert } from "../../../shared/utils/util";
 import { errorLogManager } from "../errorLogs";
@@ -84,7 +84,7 @@ export class Creator {
             const err = {
                 id,
                 ids: Object.keys(this.m_idToObj),
-                stream: s._view._view,
+                stream: s.view.view,
             };
             errorLogManager.logError(`getTypeById${JSON.stringify(err)}`);
             errorLogManager.storeGeneric("objectPoolErr", "getTypeById");

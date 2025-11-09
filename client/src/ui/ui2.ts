@@ -12,7 +12,13 @@ import type { MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
 import type { RoleDef } from "../../../shared/defs/gameObjects/roleDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import type { ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
-import { Action, DamageType, GameConfig, Input } from "../../../shared/gameConfig";
+import {
+    Action,
+    DamageType,
+    GameConfig,
+    Input,
+    type InventoryItem,
+} from "../../../shared/gameConfig";
 import { PickupMsgType } from "../../../shared/net/net";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
@@ -29,7 +35,7 @@ import type { Localization } from "./localization";
 
 const maxKillFeedLines = 6;
 const touchHoldDuration = 0.75 * 1000;
-const perkUiCount = 3;
+const perkUiCount = 4;
 
 enum InteractionType {
     None,
@@ -53,10 +59,7 @@ function isLmb(e: MouseEvent) {
     return e.button == 0;
 }
 function isRmb(e: MouseEvent) {
-    if ("which" in e) {
-        return e.which == 3;
-    }
-    return (e as MouseEvent).button == 2;
+    return e.button == 2;
 }
 // These functions, copy and diff, only work if both
 // arguments have the same internal structure
@@ -279,7 +282,7 @@ export class UiManager2 {
                 domElemById("ui-boost-counter-1").firstElementChild,
                 domElemById("ui-boost-counter-2").firstElementChild,
                 domElemById("ui-boost-counter-3").firstElementChild,
-            ] as unknown as HTMLElement[],
+            ] as HTMLElement[],
         },
         scopes: [] as Array<{
             scopeType: string;
@@ -887,7 +890,7 @@ export class UiManager2 {
             const ve = state.loot[Se];
             const ke = ve.count;
             ve.count = activePlayer.m_localData.m_inventory[ve.type] || 0;
-            ve.maximum = GameConfig.bagSizes[ve.type][xe];
+            ve.maximum = GameConfig.bagSizes[ve.type as InventoryItem][xe];
             ve.selectable = ve.count > 0 && !spectating;
             if (ve.count > ke) {
                 ve.ticker = 0;

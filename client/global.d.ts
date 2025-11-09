@@ -19,13 +19,6 @@ declare global {
     }
 
     interface Window {
-        login: () => void;
-        deleteAccount: () => void;
-        deleteItems: () => void;
-        unlock: (item: string) => void;
-        setQuest: (questType: string, idx: number) => void;
-        refreshQuest: (idx: number) => void;
-        setPassUnlock: (questType: string) => void;
         mobile?: boolean;
         webkitAudioContext?: AudioContext;
         CP: any;
@@ -64,12 +57,13 @@ declare global {
     >;
 
     const IS_DEV: boolean;
-    const GIT_VERSION: string;
-    const AIP_PLACEMENT_ID: string;
 
-    const GOOGLE_LOGIN_SUPPORTED: boolean;
-    const DISCORD_LOGIN_SUPPORTED: boolean;
-    const MOCK_LOGIN_SUPPORTED: boolean;
+    const GIT_VERSION: string | undefined;
+
+    const AIP_PLACEMENT_ID: string | undefined;
+    const GAMEMONETIZE_ID: string | undefined;
+
+    const TURNSTILE_SITE_KEY: string | undefined;
 }
 
 declare module "pixi.js-legacy" {

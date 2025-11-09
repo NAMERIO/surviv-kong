@@ -19,9 +19,11 @@ import { errorLogManager } from "./errorLogs";
 import { Game } from "./game";
 import { helpers } from "./helpers";
 import { InputHandler } from "./input";
-import { InputBindUi, InputBinds } from "./inputBinds";
+import { InputBinds, InputBindUi } from "./inputBinds";
 import { PingTest } from "./pingTest";
+import { proxy } from "./proxy";
 import { ResourceManager } from "./resources";
+import { SDK } from "./sdk";
 import { SiteInfo } from "./siteInfo";
 import { LoadoutMenu } from "./ui/loadoutMenu";
 import { Localization } from "./ui/localization";
@@ -125,7 +127,8 @@ class Application {
         this.loadBrowserDeps(onLoadComplete);
     }
 
-    loadBrowserDeps(onLoadCompleteCb: () => void) {
+    async loadBrowserDeps(onLoadCompleteCb: () => void) {
+        await SDK.init();
         onLoadCompleteCb();
     }
 
@@ -137,27 +140,35 @@ class Application {
             if (device.mobile) {
                 Menu.applyMobileBrowserStyling(device.tablet);
             }
-            const t = this.config.get("language") || this.localization.detectLocale();
-            this.config.set("language", t);
-            this.localization.setLocale(t);
+            const language =
+                this.config.get("language") || this.localization.detectLocale();
+            this.config.set("language", language);
+            this.localization.setLocale(language);
             this.localization.populateLanguageSelect();
             this.startPingTest();
             this.siteInfo.load();
             this.localization.localizeIndex();
             this.account.init();
 
-            (this.nameInput as unknown as HTMLInputElement).maxLength =
-                net.Constants.PlayerNameMaxLen;
+            this.nameInput.attr("maxLength", net.Constants.PlayerNameMaxLen);
+
             this.playMode0Btn.on("click", () => {
-                this.tryQuickStartGame(0);
+                SDK.requestMidGameAd(() => {
+                    this.tryQuickStartGame(0);
+                });
             });
             this.playMode1Btn.on("click", () => {
-                this.tryQuickStartGame(1);
+                SDK.requestMidGameAd(() => {
+                    this.tryQuickStartGame(1);
+                });
             });
             this.playMode2Btn.on("click", () => {
-                this.tryQuickStartGame(2);
+                SDK.requestMidGameAd(() => {
+                    this.tryQuickStartGame(2);
+                });
             });
-            this.serverSelect.change(() => {
+
+            this.serverSelect.on("change", () => {
                 const t = this.serverSelect.find(":selected").val();
                 this.config.set("region", t as string);
             });
@@ -200,7 +211,7 @@ class Application {
                     const a = $(r);
                     a.prop("checked", this.config.get(a.prop("id")));
                 });
-            $(".modal-settings-item > input:checkbox").change((t) => {
+            $(".modal-settings-item > input:checkbox").on("change", (t) => {
                 const r = $(t.target);
                 this.config.set(r.prop("id"), r.is(":checked"));
             });
@@ -316,9 +327,14 @@ class Application {
                 if (errMsg == "index-invalid-protocol") {
                     this.showInvalidProtocolModal();
                 }
+                if (errMsg == "rate_limited") {
+                    this.onJoinGameError(errMsg);
+                }
                 if (errMsg) {
                     this.showErrorModal(errMsg);
                 }
+                console.error("Quitting", errMsg);
+                SDK.gamePlayStop();
             };
             this.game = new Game(
                 this.pixi,
@@ -347,6 +363,8 @@ class Application {
             this.onConfigModified();
             this.config.addModifiedListener(this.onConfigModified.bind(this));
             loadStaticDomImages();
+
+            SDK.gameLoadComplete();
         }
     }
 
@@ -444,6 +462,14 @@ class Application {
     }
 
     setDOMFromConfig() {
+        if (SDK.isAnySDK && !this.config.get("playerName")) {
+            SDK.getPlayerName().then((username) => {
+                if (!username) return;
+                this.config.set("playerName", username);
+                this.nameInput.val(username);
+            });
+        }
+
         this.nameInput.val(this.config.get("playerName")!);
         this.serverSelect.find("option").each((_i, ele) => {
             ele.selected = ele.value == this.config.get("region");
@@ -483,6 +509,10 @@ class Application {
 
         if (key == "highResTex") {
             location.reload();
+        }
+
+        if (key === "debugHUD") {
+            this.game?.debugHUD?.onConfigModified();
         }
     }
 
@@ -549,7 +579,14 @@ class Application {
     tryJoinTeam(create: boolean, url?: string) {
         if (this.active && this.quickPlayPendingModeIdx === -1) {
             // Join team if the url contains a team address
-            const roomUrl = url || window.location.hash.slice(1);
+            let roomUrl = url || window.location.hash.slice(1);
+
+            const sdkRoom = SDK.getRoomInviteParam();
+            if (sdkRoom) {
+                roomUrl = sdkRoom;
+                create = false;
+            }
+
             if (create || roomUrl != "") {
                 // The main menu and squad menus have separate
                 // DOM elements for input, such as player name and
@@ -638,29 +675,47 @@ class Application {
             ban?: FindGameResponse & { banned: true },
         ) => void,
     ) {
-        (function findGameImpl(iter, maxAttempts) {
+        const findGameImpl = (iter: number, maxAttempts: number, token: string) => {
             if (iter >= maxAttempts) {
                 cb("full");
                 return;
             }
-            const retry = function () {
+            const retry = () => {
                 setTimeout(() => {
-                    findGameImpl(iter + 1, maxAttempts);
+                    helpers.verifyTurnstile(
+                        this.siteInfo.info.captchaEnabled && !this.account.loggedIn,
+                        (token) => {
+                            findGameImpl(iter + 1, maxAttempts, token);
+                        },
+                    );
                 }, 500);
             };
+            matchArgs.turnstileToken = token;
+
             $.ajax({
                 type: "POST",
                 url: api.resolveUrl("/api/find_game"),
                 data: JSON.stringify(matchArgs),
                 contentType: "application/json; charset=utf-8",
                 timeout: 10 * 1000,
-                success: function (data: FindGameResponse) {
-                    if ("error" in data && data.error != "full") {
+                xhrFields: {
+                    withCredentials: proxy.anyLoginSupported(),
+                },
+                success: (data: FindGameResponse) => {
+                    if (data.error === "invalid_captcha") {
+                        // captch may have failed because the enabled state has changed since site info was loaded
+                        // so force it to true
+                        this.siteInfo.info.captchaEnabled = true;
+                        retry();
+                        return;
+                    }
+
+                    if (data.error && data.error != "full") {
                         cb(data.error);
                         return;
                     }
 
-                    if ("banned" in data) {
+                    if (data.banned) {
                         cb(null, undefined, data as FindGameResponse & { banned: true });
                         return;
                     }
@@ -676,7 +731,13 @@ class Application {
                     retry();
                 },
             });
-        })(0, 2);
+        };
+        helpers.verifyTurnstile(
+            this.siteInfo.info.captchaEnabled && !this.account.loggedIn,
+            (token) => {
+                findGameImpl(0, 2, token);
+            },
+        );
     }
 
     joinGame(matchData: FindGameMatchData) {
@@ -707,7 +768,6 @@ class Application {
             this.game!.tryJoinGame(
                 url,
                 matchData.data,
-                this.account.loadoutPriv,
                 this.account.questPriv,
                 onFailure,
             );
@@ -719,10 +779,19 @@ class Application {
         const errMap: Partial<Record<FindGameError, string>> = {
             full: this.localization.translate("index-failed-finding-game"),
             invalid_protocol: this.localization.translate("index-invalid-protocol"),
+            invalid_captcha: this.localization.translate("index-invalid-captcha"),
             join_game_failed: this.localization.translate("index-failed-joining-game"),
+            rate_limited: this.localization.translate("index-rate-limited"),
         };
         if (err == "invalid_protocol") {
             this.showInvalidProtocolModal();
+        }
+
+        // Forcefully set captcha to enabled if we fail the captcha
+        // This can happen if it was disabled when the page loaded which would meant it was sending an empty token
+        // And we only fetch the state when the page loads...
+        if (err === "invalid_captcha") {
+            this.siteInfo.info.captchaEnabled = true;
         }
         this.showErrorModal(err);
 
@@ -744,8 +813,8 @@ class Application {
             const expiresIn = new Date(ban.expiresIn);
             const timeLeft = expiresIn.getTime() - Date.now();
 
-            const daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-            const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
+            const daysLeft = Math.round(timeLeft / (1000 * 60 * 60 * 24));
+            const hoursLeft = Math.round(timeLeft / (1000 * 60 * 60));
 
             if (daysLeft > 1) {
                 expiration = `Expires in: ${daysLeft} days`;
@@ -769,8 +838,9 @@ class Application {
         const typeText: Record<string, string> = {
             // TODO: translate those?
             behind_proxy: this.localization.translate("index-behind-proxy"),
-            ip_banned: `Your IP has been banned`,
+            ip_banned: this.localization.translate("index-ip-banned"),
         };
+
         const text = typeText[err];
 
         if (text) {
@@ -796,7 +866,6 @@ class Application {
         this.resourceManager!.update(dt);
         this.audioManager.update(dt);
         this.ambience.update(dt, this.audioManager, !this.active);
-        this.teamMenu.update(dt);
 
         // Game update
         if (this.game?.initialized && this.game.m_playing) {
@@ -873,6 +942,9 @@ const reportedErrors: string[] = [];
 window.onerror = function (msg, url, lineNo, columnNo, error) {
     msg = msg || "undefined_error_msg";
     const stacktrace = error ? error.stack : "";
+
+    // don't report useless errors lol
+    if (!url && !lineNo && !columnNo) return;
 
     const errObj = {
         msg,

@@ -1,8 +1,9 @@
-import { randomUUID } from "crypto";
-import { platform } from "os";
-import NanoTimer from "nanotimer";
 import type { WebSocket } from "uWebSockets.js";
+import { randomUUID } from "crypto";
+import NanoTimer from "nanotimer";
+import { platform } from "os";
 import type { MapDefs } from "../../../shared/defs/mapDefs";
+import * as net from "../../../shared/net/net";
 import { Config } from "../config";
 import type {
     FindGamePrivateBody,
@@ -104,9 +105,16 @@ export class SingleThreadGameManager implements GameManager {
             (id, data) => {
                 this.sockets.get(id)?.send(data, true, false);
             },
-            (id) => {
+            (id, reason) => {
                 const socket = this.sockets.get(id);
                 if (socket && !socket.getUserData().closed) {
+                    if (reason) {
+                        const disconnectMsg = new net.DisconnectMsg();
+                        disconnectMsg.reason = reason;
+                        const stream = new net.MsgStream(new ArrayBuffer(128));
+                        stream.serializeMsg(net.MsgType.Disconnect, disconnectMsg);
+                        socket.send(stream.getBuffer(), true, false);
+                    }
                     socket.close();
                 }
             },
@@ -150,6 +158,7 @@ export class SingleThreadGameManager implements GameManager {
         const data = socket.getUserData();
         const game = this.gamesById.get(data.gameId);
         if (game === undefined) {
+            console.log(`Game ${data.gameId} not found, closing socket.`);
             socket.close();
             return;
         }

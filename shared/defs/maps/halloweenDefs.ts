@@ -11,6 +11,7 @@ const mapDef: PartialMapDef = {
         name: "Halloween",
         icon: "img/gui/pumpkin-play.svg",
         buttonCss: "btn-mode-halloween",
+        backgroundImg: "img/main_splash_halloween.png",
     },
     assets: {
         audio: [
@@ -83,14 +84,14 @@ const mapDef: PartialMapDef = {
     },
     biome: {
         colors: {
-            background: 1507328,
-            water: 2621440,
-            waterRipple: 1048833,
-            beach: 6570254,
-            riverbank: 3939077,
-            grass: 2171908,
-            underground: 1181697,
-            playerSubmerge: 1310720,
+            background: 0x170000,
+            water: 0x280000,
+            waterRipple: 0x100101,
+            beach: 0x64410e,
+            riverbank: 0x3c1b05,
+            grass: 0x212404,
+            underground: 0x120801,
+            playerSubmerge: 0x140000,
         },
         particles: {
             camera: "falling_leaf_halloween",
@@ -241,7 +242,7 @@ const mapDef: PartialMapDef = {
                 barn_01h: 1,
                 cache_03: 36,
                 cache_01: 1,
-                cache_02: 1,
+                cache_02h: 1,
                 mansion_structure_02: 1,
                 bunker_structure_01: 1,
                 bunker_structure_03: 1,
@@ -266,8 +267,6 @@ const mapDef: PartialMapDef = {
                 tree_01: "tree_07",
                 stone_03: "stone_01",
                 cabin_01: "cabin_02",
-                house_red_01: "house_red_01b",
-                house_red_02: "house_red_01b",
             },
         ],
     },

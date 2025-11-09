@@ -38,8 +38,18 @@ export interface DamageParams {
     gameSourceType?: string;
     mapSourceType?: string;
     source?: GameObject;
+    killCreditSource?: Player;
     isExplosion?: boolean;
-    weaponSourceType?: string; // used by potato weapon swaps, gets passed down to e.g explosions
+    /**
+     * The source weapon that originally triggered the damage
+     * Used by potato weapon swaps, gets passed down to e.g explosions
+     */
+    weaponSourceType?: string;
+    /**
+     * Multiplier applied to armor reduction
+     * Example: 0.85 will reduce 15% of the armor
+     */
+    armorPenetration?: number;
 }
 
 const MAX_ID = 65535;
@@ -61,6 +71,21 @@ export class ObjectRegister {
         for (let i = 0; i < MAX_ID; i++) {
             this.idToObj[i] = null;
         }
+
+        const preAllocIds = (type: ObjectType, amount: number) => {
+            for (let i = 0; i < amount; i++) {
+                const id = this.allocId(type);
+                this.freeId(type, id);
+            }
+        };
+
+        preAllocIds(ObjectType.Player, 64);
+        preAllocIds(ObjectType.Loot, 256);
+        preAllocIds(ObjectType.DeadBody, 64);
+        preAllocIds(ObjectType.Decal, 256);
+        preAllocIds(ObjectType.Projectile, 128);
+        preAllocIds(ObjectType.Smoke, 64);
+        preAllocIds(ObjectType.Airdrop, 64);
     }
 
     getById(id: number) {
@@ -146,8 +171,9 @@ export class ObjectRegister {
 
 export abstract class BaseGameObject {
     abstract readonly __type: ObjectType;
-    declare __id: number;
-    declare __arrayIdx: number;
+    __id!: number;
+    __arrayIdx!: number;
+
     __gridCells: Vec2[] = [];
     __gridQueryId = 0;
     abstract bounds: AABB;
@@ -193,6 +219,7 @@ export abstract class BaseGameObject {
                 data: this,
             ) => void
         )(this.partialStream, this);
+        this.partialStream.writeAlignToNextByte();
     }
 
     serializeFull(): void {
@@ -211,6 +238,7 @@ export abstract class BaseGameObject {
                 data: this,
             ) => void
         )(this.fullStream, this);
+        this.fullStream.writeAlignToNextByte();
     }
 
     setDirty() {
@@ -222,55 +250,63 @@ export abstract class BaseGameObject {
     }
 
     checkStairs(objs: GameObject[], rad: number): Structure["stairs"][0] | undefined {
-        let finalStair: Structure["stairs"][0] | undefined;
-        let onStair = false;
         for (let i = 0; i < objs.length; i++) {
             const obj = objs[i];
             if (obj.__type !== ObjectType.Structure) continue;
-            for (let j = 0; j < obj.stairs.length; j++) {
-                const stair = obj.stairs[j];
-                if (stair.lootOnly && this.__type !== ObjectType.Loot) continue;
+            const stair = this.checkStructureStairs(obj, rad);
+            if (stair) return stair;
+        }
+        return undefined;
+    }
 
-                const collides = coldet.testCircleAabb(
+    checkStructureStairs(obj: Structure, rad: number) {
+        let onStair = false;
+        let finalStair: Structure["stairs"][0] | undefined;
+
+        for (let j = 0; j < obj.stairs.length; j++) {
+            const stair = obj.stairs[j];
+            if (stair.lootOnly && this.__type !== ObjectType.Loot) continue;
+
+            const collides = coldet.testCircleAabb(
+                this.pos,
+                rad,
+                stair.collision.min,
+                stair.collision.max,
+            );
+
+            if (collides) {
+                const downCollision = coldet.intersectAabbCircle(
+                    stair.downAabb.min,
+                    stair.downAabb.max,
                     this.pos,
                     rad,
-                    stair.collision.min,
-                    stair.collision.max,
                 );
 
-                if (collides) {
-                    const downCollision = coldet.intersectAabbCircle(
-                        stair.downAabb.min,
-                        stair.downAabb.max,
-                        this.pos,
-                        rad,
-                    );
+                const upCollision = coldet.intersectAabbCircle(
+                    stair.upAabb.min,
+                    stair.upAabb.max,
+                    this.pos,
+                    rad,
+                );
 
-                    const upCollision = coldet.intersectAabbCircle(
-                        stair.upAabb.min,
-                        stair.upAabb.max,
-                        this.pos,
-                        rad,
-                    );
-
-                    if (upCollision && downCollision) {
-                        this.layer = upCollision.pen > downCollision.pen ? 2 : 3;
-                    } else if (downCollision) {
-                        this.layer = 3;
-                    } else if (upCollision) {
-                        this.layer = 2;
-                    }
-
-                    onStair = true;
-                    finalStair = stair;
-                    break;
+                if (upCollision && downCollision) {
+                    this.layer = upCollision.pen > downCollision.pen ? 2 : 3;
+                } else if (downCollision) {
+                    this.layer = 3;
+                } else if (upCollision) {
+                    this.layer = 2;
                 }
-            }
-            if (!onStair) {
-                if (this.layer === 2) this.layer = 0;
-                if (this.layer === 3) this.layer = 1;
+
+                onStair = true;
+                finalStair = stair;
+                break;
             }
         }
+        if (!onStair) {
+            if (this.layer === 2) this.layer = 0;
+            if (this.layer === 3) this.layer = 1;
+        }
+
         return finalStair;
     }
 

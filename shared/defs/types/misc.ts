@@ -1,3 +1,5 @@
+import { TeamMode } from "../../gameConfig";
+
 export enum MapId {
     Main = 0,
     Desert = 1,
@@ -7,4 +9,11 @@ export enum MapId {
     Savannah = 5,
     Halloween = 6,
     Cobalt = 7,
+    Birthday = 8,
 }
+
+export const TeamModeToString = {
+    [TeamMode.Solo]: "solo",
+    [TeamMode.Duo]: "duo",
+    [TeamMode.Squad]: "squad",
+};

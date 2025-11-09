@@ -3,20 +3,23 @@ import type { MapDef } from "../mapDefs";
 import { Main, type PartialMapDef } from "./baseDefs";
 
 const mapDef: PartialMapDef = {
+    desc: {
+        backgroundImg: "img/main_splash_7_3.png",
+    },
     assets: {
         audio: [],
         atlases: ["gradient", "loadout", "shared", "main"],
     },
     biome: {
         colors: {
-            background: 2118510,
-            water: 3310251,
-            waterRipple: 11792639,
-            beach: 16035400,
-            riverbank: 9079434,
-            grass: 6066442,
-            underground: 1772803,
-            playerSubmerge: 2854052,
+            background: 0x20536e,
+            water: 0x3282ab,
+            waterRipple: 0xb3f0ff,
+            beach: 0xf4ae48,
+            riverbank: 0x8a8a8a,
+            grass: 0x5c910a,
+            underground: 0x1b0d03,
+            playerSubmerge: 0x2b8ca4,
             playerGhillie: 0x5b8e0a,
         },
         sound: { riverShore: "stone" },

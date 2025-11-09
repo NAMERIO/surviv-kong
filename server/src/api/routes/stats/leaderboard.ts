@@ -1,6 +1,5 @@
-import { and, eq, gte, inArray, sql } from "drizzle-orm";
+import { and, count, eq, gte, inArray, ne, type SQL, sql } from "drizzle-orm";
 import { Hono } from "hono";
-import type { Context } from "../..";
 import { MinGames } from "../../../../../shared/constants";
 import { TeamMode } from "../../../../../shared/gameConfig";
 import {
@@ -8,14 +7,16 @@ import {
     type LeaderboardResponse,
     zLeaderboardsRequest,
 } from "../../../../../shared/types/stats";
-import { Config } from "../../../config";
+import type { Context } from "../..";
 import { server } from "../../apiServer";
-import { databaseEnabledMiddleware, rateLimitMiddleware } from "../../auth/middleware";
-import { validateParams } from "../../auth/middleware";
+import {
+    databaseEnabledMiddleware,
+    rateLimitMiddleware,
+    validateParams,
+} from "../../auth/middleware";
 import { leaderboardCache } from "../../cache/leaderboard";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
-import { filterByInterval, filterByMapId } from "./user_stats";
 
 export const leaderboardRouter = new Hono<Context>();
 
@@ -25,35 +26,30 @@ leaderboardRouter.post(
     rateLimitMiddleware(40, 60 * 1000),
     validateParams(zLeaderboardsRequest),
     async (c) => {
-        try {
-            const params = c.req.valid("json");
-            const { type, teamMode } = params;
-            const cachedResult = await leaderboardCache.get(params);
+        const params = c.req.valid("json");
+        const { type, teamMode } = params;
+        const cachedResult = await leaderboardCache.get(params);
 
-            if (cachedResult) {
-                console.log(
-                    `[CACHE HIT] -> ${leaderboardCache.getCacheKey("leaderboard", params)}`,
-                );
-                return c.json(cachedResult, 200);
-            }
-
-            const startTime = performance.now();
-            const data =
-                type === "most_kills" && teamMode != TeamMode.Solo
-                    ? await multiplePlayersQuery(params)
-                    : await soloLeaderboardQuery(params);
-            logQueryPerformance(startTime, params);
-
-            // TODO: decide if we should cache empty results;
-            if (data.length != 0) {
-                await leaderboardCache.set(params, data);
-            }
-
-            return c.json<LeaderboardResponse[]>(data, 200);
-        } catch (err) {
-            server.logger.warn("/api/leaderboard: Error getting leaderboard data", err);
-            return c.json({ error: "" }, 500);
+        if (cachedResult) {
+            server.logger.debug(
+                `[CACHE HIT] -> ${leaderboardCache.getCacheKey("leaderboard", params)}`,
+            );
+            return c.json(cachedResult, 200);
         }
+
+        const startTime = performance.now();
+        const data =
+            type === "most_kills" && teamMode != TeamMode.Solo
+                ? await multiplePlayersQuery(params)
+                : await soloLeaderboardQuery(params);
+        logQueryPerformance(startTime, params);
+
+        // TODO: decide if we should cache empty results;
+        if (data.length != 0) {
+            await leaderboardCache.set(params, data);
+        }
+
+        return c.json<LeaderboardResponse[]>(data, 200);
     },
 );
 
@@ -61,52 +57,59 @@ leaderboardRouter.post(
 const MAX_RESULT_COUNT = 100;
 
 const typeToQuery: Record<LeaderboardRequest["type"], string> = {
-    kills: "match_data.kills",
+    kills: "SUM(match_data.kills)",
     most_damage_dealt: "MAX(match_data.damage_dealt)",
-    kpg: "SUM(match_data.kills) / COUNT(DISTINCT match_data.game_id)",
-    most_kills: "MAX(match_data.kills)",
+    kpg: "ROUND(SUM(match_data.kills) * 1.0 / COUNT(*), 1)",
+    most_kills: "match_data.kills",
     wins: "COUNT(CASE WHEN match_data.rank = 1 THEN 1 END)",
+};
+
+const intervalFilter = {
+    daily: gte(matchDataTable.createdAt, sql`NOW() - INTERVAL '1 day'`),
+    weekly: gte(matchDataTable.createdAt, sql`NOW() - INTERVAL '7 days'`),
 };
 
 async function soloLeaderboardQuery(params: LeaderboardRequest) {
     const { interval, mapId, teamMode, type } = params;
-    const intervalFilterQuery = filterByInterval(interval);
-    const mapIdFilterQuery = filterByMapId(mapId as unknown as string);
-    const userNotBannedQuery = `AND users.banned = false`;
-    const loggedPlayersFilterQuery = `AND match_data.user_id IS NOT NULL`;
     const minGames = type === "kpg" ? MinGames[type][interval] : 1;
 
-    // SQL 🤮, migrate to drizzle once stable
-    const query = sql.raw(`
-    SELECT
-        match_data.username,
-        match_data.map_id AS map_id,
-        match_data.region,
-        COUNT(DISTINCT(match_data.game_id)) as games,
-        match_data.team_mode as team_mode,
-        users.slug,
-        ${typeToQuery[type]} as val
-    FROM match_data
-    LEFT JOIN users ON match_data.user_id = users.id
-    WHERE team_mode = ${teamMode}
-      ${userNotBannedQuery}
-      ${loggedPlayersFilterQuery}
-      ${intervalFilterQuery}
-      ${mapIdFilterQuery}
-    GROUP BY
-      map_id,
-      match_data.kills,
-      match_data.username,
-      match_data.region,
-      match_data.team_mode,
-      users.slug    
-    HAVING COUNT(DISTINCT(match_data.game_id)) >= ${minGames}
-    ORDER BY val DESC
-    LIMIT ${MAX_RESULT_COUNT};
-  `);
+    const usernameQuery =
+        type === "most_kills" ? matchDataTable.username : usersTable.username;
 
-    const result = await db.execute<LeaderboardResponse>(query);
-    return result.rows;
+    const result = await db
+        .select({
+            username: usernameQuery,
+            mapId: matchDataTable.mapId,
+            region: matchDataTable.region,
+            teamMode: matchDataTable.teamMode,
+            games: count(sql`DISTINCT(match_data.game_id)`),
+            slug: usersTable.slug,
+            val: sql.raw(`${typeToQuery[type]} as val`) as SQL<number>,
+        })
+        .from(matchDataTable)
+        .leftJoin(usersTable, eq(usersTable.id, matchDataTable.userId))
+        .where(
+            and(
+                eq(matchDataTable.teamMode, teamMode),
+                eq(usersTable.banned, false),
+                interval === "alltime" ? undefined : intervalFilter[interval],
+                ne(matchDataTable.userId, ""),
+                eq(matchDataTable.mapId, mapId),
+            ),
+        )
+        .groupBy(
+            matchDataTable.mapId,
+            usersTable.slug,
+            matchDataTable.region,
+            matchDataTable.teamMode,
+            usernameQuery,
+            sql`${type === "most_kills" ? matchDataTable.kills : ""}`,
+        )
+        .having(gte(count(sql`DISTINCT(match_data.game_id)`), minGames))
+        .orderBy(sql`val DESC`)
+        .limit(MAX_RESULT_COUNT);
+
+    return result as LeaderboardResponse[];
 }
 
 async function multiplePlayersQuery({
@@ -114,11 +117,6 @@ async function multiplePlayersQuery({
     mapId,
     teamMode,
 }: LeaderboardRequest): Promise<LeaderboardResponse[]> {
-    const intervalFilter = {
-        daily: gte(matchDataTable.createdAt, sql`NOW() - INTERVAL '1 day'`),
-        weekly: gte(matchDataTable.createdAt, sql`NOW() - INTERVAL '7 days'`),
-    };
-
     const data = await db
         .select({
             matchedUsers: sql<
@@ -145,6 +143,8 @@ async function multiplePlayersQuery({
             ),
         )
         .groupBy(matchDataTable.gameId, matchDataTable.teamId, matchDataTable.region)
+        // make sure at least one member of the duo / squad is logged in
+        .having(sql`count(case when user_id!='' then 1 end) >= 1`)
         .orderBy(sql`val DESC`)
         .limit(MAX_RESULT_COUNT);
 
@@ -167,7 +167,7 @@ async function multiplePlayersQuery({
             id: usersTable.id,
         })
         .from(usersTable)
-        .where(inArray(usersTable.id, userIds));
+        .where(and(inArray(usersTable.id, userIds), eq(usersTable.banned, false)));
 
     const slugMap = Object.fromEntries(
         slugsFromUserIds.map(({ id, slug }) => [id, slug]),
@@ -191,18 +191,13 @@ async function multiplePlayersQuery({
 }
 
 function logQueryPerformance(startTime: number, params: LeaderboardRequest) {
-    if (!Config.errorLoggingWebhook) return;
-    if (Math.random() > 0.2) return;
-
     const endTime = performance.now();
     const executionTime = endTime - startTime;
-    const message = `**${params.type} leaderboard** | Execution time: ${executionTime > 1000 ? `${(executionTime / 1000).toFixed(2)}s` : `${executionTime.toFixed(2)}ms`} | Params: ${JSON.stringify(params)}`;
-
-    fetch(Config.errorLoggingWebhook, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(message),
-    });
+    const timeString =
+        executionTime > 1000
+            ? `${(executionTime / 1000).toFixed(2)}s`
+            : `${executionTime.toFixed(2)}ms`;
+    server.logger[executionTime > 1000 ? "warn" : "debug"](
+        `leaderboard | Execution time: ${timeString} | ${leaderboardCache.getCacheKey("debug" as any, params)}`,
+    );
 }
