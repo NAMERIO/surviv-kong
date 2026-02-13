@@ -49,6 +49,8 @@ const mapDef: PartialMapDef = {
                 // loot_tier_1: 24,
                 // loot_tier_beach: 4,
                 candy_store_01: 20,
+                candy_store_basement: 20,
+                
             },
         ],
     },

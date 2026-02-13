@@ -17851,9 +17851,11 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         img: wallImg("map-wall-08-rounded.img", 0x79563e),
     }),
     candy_store_01: createCandyStore({
-        
+        basement: "candy_store_basement",
     }),
-    candy_store_basement: createCandyStoreBasement({}),
+    candy_store_basement: createCandyStoreBasement({
+        basement: "candy_store_01"
+    }),
     bank_01: createBank({ teamId: 1 }),
     bank_01b: createBank({ vault: "vault_01b" }),
     bank_01x: createBank({
